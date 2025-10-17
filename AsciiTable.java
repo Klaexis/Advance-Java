@@ -31,6 +31,7 @@ public class AsciiTable {
 		return randomASCII.toString();
 	}
 
+    // Check for existing file or create a new one
     private static String checkOrCreateFile(AsciiTable app, Scanner sc, String[] args) {
         String fileName = null;
         boolean fileLoaded = false;
@@ -135,6 +136,30 @@ public class AsciiTable {
             return false;
         }
     }
+
+    public void resetTable(String fileName, Scanner sc) {
+        File file = new File(fileName);
+
+        if (!file.exists()) {
+            System.out.println("File not found: " + fileName);
+            return;
+        }
+
+        System.out.print("Enter new number of rows: ");
+        int newRows = sc.nextInt();
+
+        System.out.print("Enter new number of columns: ");
+        int newCols = sc.nextInt();
+
+        // Regenerate table and overwrite file
+        generateAndSave(fileName, newRows, newCols);
+
+        // Reload table into memory
+        loadFromFile(fileName);
+
+        // Print to confirm
+        printTable(fileName);
+    }
 	
 	// Print the table 
     public void printTable(String fileName) {
@@ -193,6 +218,7 @@ public class AsciiTable {
 					break;
                 case "reset": //Reset
 					System.out.println("Resetting...");
+                    app.resetTable(fileName, sc);
 					break;
 				case "x": //Exit
 					System.out.println("Exiting...");
