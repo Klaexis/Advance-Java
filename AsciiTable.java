@@ -7,22 +7,21 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class AsciiTable {
-	private LinkedHashMap<String, String> table;
+	private ArrayList<ArrayList<Pair>> table;
     private String fileName;
 	
-    // Initialize the LinkedHashMap
+    // Initialize the ArrayList
     public AsciiTable() {
-        table = new LinkedHashMap<>();
+        table = new ArrayList<>();
     }
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
-
 	//Generate a random 3 character ASCII String
 	private static String generateRandomAscii() {
 		Random random = new Random();
@@ -76,7 +75,7 @@ public class AsciiTable {
     }
 
     // Check for existing file or create a new one
-    private static String checkOrCreateFile(Scanner sc, String[] args) {
+    public static String checkOrCreateFile(Scanner sc, String[] args) {
         String fileName = null;
         boolean fileLoaded = false;
 
@@ -161,17 +160,18 @@ public class AsciiTable {
             return false;
         }
 
-        table.clear(); 
-
-        Pattern pattern = Pattern.compile("\\(([^\\s]+)\\s([^\\s]+)\\)");
+        Pattern pattern = Pattern.compile("\\(([^\\s]+)\\s([^)]*)\\)");
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
+            table.clear();
             while ((line = reader.readLine()) != null) {
                 Matcher matcher = pattern.matcher(line);
+                ArrayList<Pair> row = new ArrayList<>();
                 while (matcher.find()) {
-                    table.put(matcher.group(1), matcher.group(2));
+                    row.add(new Pair(matcher.group(1), matcher.group(2)));
                 }
+                table.add(row);
             }
             System.out.println("\nFile loaded successfully!\n");
             return true;
@@ -189,14 +189,13 @@ public class AsciiTable {
         }
 
         try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
-            int count = 0;
-            for (var entry : table.entrySet()) {
-                writer.printf("(%s %s) ", entry.getKey(), entry.getValue());
-                count++;
-                // create newlines every 3 pairs for readability (optional)
-                if (count % 3 == 0) writer.println();
+            for (ArrayList<Pair> row : table) {
+                for (Pair p : row) {
+                    writer.print(p.toString() + " ");
+                }
+                writer.println();
             }
-            System.out.println("Table saved back to " + fileName + "\n");
+            System.out.println("Table saved to " + fileName + "\n");
         } catch (IOException e) {
             System.out.println("Error writing to file: " + e.getMessage());
         }
@@ -209,14 +208,19 @@ public class AsciiTable {
         }
 
         int[] tableDimensions = getTableDimensions(sc);
-        int row = tableDimensions[0];
-        int col = tableDimensions[1];
+        int rows = tableDimensions[0];
+        int cols = tableDimensions[1];
 
         table.clear();
-        for (int i = 0; i < row * col; i++) {
-            String key = generateRandomAscii();
-            String value = generateRandomAscii();
-            table.put(key, value);
+
+        for (int i = 0; i < rows; i++) {
+            ArrayList<Pair> rowList = new ArrayList<>();
+            for (int j = 0; j < cols; j++) {
+                String key = generateRandomAscii();
+                String value = generateRandomAscii();
+                rowList.add(new Pair(key, value));
+            }
+            table.add(rowList);
         }
 
         saveToFile();
@@ -231,69 +235,12 @@ public class AsciiTable {
         }
 
         System.out.println("Table Contents:");
-        int count = 0;
-        for (var entry : table.entrySet()) {
-            System.out.printf("(%s %s) ", entry.getKey(), entry.getValue());
-            count++;
-            if (count % 3 == 0) System.out.println(); // new line after 3 pairs
+        for (ArrayList<Pair> row : table) {
+            for (Pair p : row) {
+                System.out.print(p.toString() + " ");
+            }
+            System.out.println();
         }
-        System.out.println("\n");
+        System.out.println();
     }
-
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-        AsciiTable app = new AsciiTable();
-        String fileName = checkOrCreateFile(sc, args);
-
-        app.setFileName(fileName);
-        app.loadFromFile(fileName);
-        app.printTable();
-		
-		boolean isRunning = true;
-		while(isRunning) {
-			System.out.print("[ search ] - Search\n"+
-							 "[ edit ] - Edit\n"+
-							 "[ add_row ] - Add Row\n"+
-                             "[ sort ] - Sort\n"+
-							 "[ print ] - Print\n"+
-                             "[ reset ] - Reset\n"+
-							 "[ x ] - Exit\n"+
-							 "Enter the function you want to do: ");
-							 
-			String choice = sc.next().toLowerCase();
-
-			System.out.println();
-
-			switch(choice) {
-				case "search": //Search
-					System.out.println("Searching...");
-					break;
-				case "edit": //Edit
-					System.out.println("Editing...");
-					break;
-				case "add_row": //Add Row
-                    System.out.println("Adding Row...");
-					break;
-                case "sort": //Sort
-                    System.out.println("Sorting...");
-					break;
-				case "print": //Print
-					System.out.println("Printing...");
-                    app.printTable();
-					break;
-                case "reset": //Reset
-					System.out.println("Resetting...");
-                    app.resetTable(sc);
-					break;
-				case "x": //Exit
-					System.out.println("Exiting...");
-					isRunning = false;
-					sc.close();
-					System.exit(0); 
-					break;
-				default: //Invalid Input
-					System.out.println("Invalid Input\n");
-			}
-		}
-	}
 }
