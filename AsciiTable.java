@@ -12,10 +12,15 @@ import java.util.Random;
 
 public class AsciiTable {
 	private LinkedHashMap<String, String> table;
+    private String fileName;
 	
     // Initialize the LinkedHashMap
     public AsciiTable() {
         table = new LinkedHashMap<>();
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
 	//Generate a random 3 character ASCII String
@@ -65,7 +70,6 @@ public class AsciiTable {
 				System.out.println("Invalid format. Please use the format rowxcol (ex. 1x1, 3x3) with lowercase 'x'.");
 			}
         }
-
         System.out.println();
 
         return dimensions;
@@ -149,39 +153,58 @@ public class AsciiTable {
         System.out.println();
     }
 	
-    // // Read the key-value pairs from file and store in table
-    // public boolean loadFromFile(String fileName) {
-    //     File file = new File(fileName);
-    //     if (!file.exists()) {
-    //         System.out.println("File not found: " + fileName);
-    //         return false;
-    //     }
-
-    //     table.clear(); 
-
-    //     Pattern pattern = Pattern.compile("\\(([^\\s]+)\\s([^\\s]+)\\)");
-
-    //     try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-    //         String line;
-    //         while ((line = reader.readLine()) != null) {
-    //             Matcher matcher = pattern.matcher(line);
-    //             while (matcher.find()) {
-    //                 table.put(matcher.group(1), matcher.group(2));
-    //             }
-    //         }
-    //         System.out.println("\nFile loaded successfully!\n");
-    //         return true;
-    //     } catch (IOException e) {
-    //         System.out.println("Error reading file: " + e.getMessage());
-    //         return false;
-    //     }
-    // }
-
-    public void resetTable(String fileName, Scanner sc) {
+    // Read the key-value pairs from file and store in table
+    public boolean loadFromFile(String fileName) {
         File file = new File(fileName);
-
         if (!file.exists()) {
             System.out.println("File not found: " + fileName);
+            return false;
+        }
+
+        table.clear(); 
+
+        Pattern pattern = Pattern.compile("\\(([^\\s]+)\\s([^\\s]+)\\)");
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                Matcher matcher = pattern.matcher(line);
+                while (matcher.find()) {
+                    table.put(matcher.group(1), matcher.group(2));
+                }
+            }
+            System.out.println("\nFile loaded successfully!\n");
+            return true;
+        } catch (IOException e) {
+            System.out.println("Error reading file: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // Save the current table back to file
+    public void saveToFile() {
+        if (fileName == null) {
+            System.out.println("No file associated with this table.");
+            return;
+        }
+
+        try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
+            int count = 0;
+            for (var entry : table.entrySet()) {
+                writer.printf("(%s %s) ", entry.getKey(), entry.getValue());
+                count++;
+                // create newlines every 3 pairs for readability (optional)
+                if (count % 3 == 0) writer.println();
+            }
+            System.out.println("Table saved back to " + fileName + "\n");
+        } catch (IOException e) {
+            System.out.println("Error writing to file: " + e.getMessage());
+        }
+    }
+
+    public void resetTable(Scanner sc) {
+        if (fileName == null) {
+            System.out.println("No file associated with this table.");
             return;
         }
 
@@ -189,31 +212,32 @@ public class AsciiTable {
         int row = tableDimensions[0];
         int col = tableDimensions[1];
 
-        // Regenerate table and overwrite file
-        generateAndSave(fileName, row, col);
+        table.clear();
+        for (int i = 0; i < row * col; i++) {
+            String key = generateRandomAscii();
+            String value = generateRandomAscii();
+            table.put(key, value);
+        }
 
-        // Print to confirm
-        printTable(fileName);
+        saveToFile();
+        printTable();
     }
 	
 	// Print the table 
-    public void printTable(String fileName) {
-        File file = new File(fileName);
-        if (!file.exists()) {
-            System.out.println("File not found.\n");
+    public void printTable() {
+        if (table.isEmpty()) {
+            System.out.println("Table is empty or not loaded.\n");
             return;
         }
 
-        System.out.println("Generated ASCII Table:");
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
-            System.out.println();
-        } catch (IOException e) {
-            System.out.println("Error reading file: " + e.getMessage());
+        System.out.println("Table Contents:");
+        int count = 0;
+        for (var entry : table.entrySet()) {
+            System.out.printf("(%s %s) ", entry.getKey(), entry.getValue());
+            count++;
+            if (count % 3 == 0) System.out.println(); // new line after 3 pairs
         }
+        System.out.println("\n");
     }
 
 	public static void main(String[] args) {
@@ -221,7 +245,9 @@ public class AsciiTable {
         AsciiTable app = new AsciiTable();
         String fileName = checkOrCreateFile(sc, args);
 
-        app.printTable(fileName);
+        app.setFileName(fileName);
+        app.loadFromFile(fileName);
+        app.printTable();
 		
 		boolean isRunning = true;
 		while(isRunning) {
@@ -249,11 +275,11 @@ public class AsciiTable {
 					break;
 				case "print": //Print
 					System.out.println("Printing...");
-                    app.printTable(fileName);
+                    app.printTable();
 					break;
                 case "reset": //Reset
 					System.out.println("Resetting...");
-                    app.resetTable(fileName, sc);
+                    app.resetTable(sc);
 					break;
 				case "x": //Exit
 					System.out.println("Exiting...");
