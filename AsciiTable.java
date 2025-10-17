@@ -72,7 +72,7 @@ public class AsciiTable {
     }
 
     // Check for existing file or create a new one
-    private static String checkOrCreateFile(AsciiTable app, Scanner sc, String[] args) {
+    private static String checkOrCreateFile(Scanner sc, String[] args) {
         String fileName = null;
         boolean fileLoaded = false;
 
@@ -102,7 +102,7 @@ public class AsciiTable {
 
             // If file exists, load its content
             if (file.exists()) {
-                fileLoaded = app.loadFromFile(fileName);
+                fileLoaded = true;
             }
         }
 
@@ -120,12 +120,13 @@ public class AsciiTable {
             int col = tableDimensions[1];
 
             generateAndSave(fileName, row, col);
-            fileLoaded = app.loadFromFile(fileName);
+            fileLoaded = true;
         }
 
         if (!fileLoaded) {
             System.out.println("Failed to load file.");
         }
+        System.out.println();
 
         return fileName;
     }
@@ -145,35 +146,36 @@ public class AsciiTable {
         } catch (IOException e) {
             System.out.println("Error writing to file: " + e.getMessage());
         }
+        System.out.println();
     }
 	
-    // Read the key-value pairs from file and store in table
-    public boolean loadFromFile(String fileName) {
-        File file = new File(fileName);
-        if (!file.exists()) {
-            System.out.println("File not found: " + fileName);
-            return false;
-        }
+    // // Read the key-value pairs from file and store in table
+    // public boolean loadFromFile(String fileName) {
+    //     File file = new File(fileName);
+    //     if (!file.exists()) {
+    //         System.out.println("File not found: " + fileName);
+    //         return false;
+    //     }
 
-        table.clear(); 
+    //     table.clear(); 
 
-        Pattern pattern = Pattern.compile("\\(([^\\s]+)\\s([^\\s]+)\\)");
+    //     Pattern pattern = Pattern.compile("\\(([^\\s]+)\\s([^\\s]+)\\)");
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                Matcher matcher = pattern.matcher(line);
-                while (matcher.find()) {
-                    table.put(matcher.group(1), matcher.group(2));
-                }
-            }
-            System.out.println("\nFile loaded successfully!\n");
-            return true;
-        } catch (IOException e) {
-            System.out.println("Error reading file: " + e.getMessage());
-            return false;
-        }
-    }
+    //     try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+    //         String line;
+    //         while ((line = reader.readLine()) != null) {
+    //             Matcher matcher = pattern.matcher(line);
+    //             while (matcher.find()) {
+    //                 table.put(matcher.group(1), matcher.group(2));
+    //             }
+    //         }
+    //         System.out.println("\nFile loaded successfully!\n");
+    //         return true;
+    //     } catch (IOException e) {
+    //         System.out.println("Error reading file: " + e.getMessage());
+    //         return false;
+    //     }
+    // }
 
     public void resetTable(String fileName, Scanner sc) {
         File file = new File(fileName);
@@ -189,9 +191,6 @@ public class AsciiTable {
 
         // Regenerate table and overwrite file
         generateAndSave(fileName, row, col);
-
-        // Reload table into memory
-        loadFromFile(fileName);
 
         // Print to confirm
         printTable(fileName);
@@ -220,7 +219,7 @@ public class AsciiTable {
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
         AsciiTable app = new AsciiTable();
-        String fileName = checkOrCreateFile(app, sc, args);
+        String fileName = checkOrCreateFile(sc, args);
 
         app.printTable(fileName);
 		
