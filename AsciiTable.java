@@ -31,6 +31,46 @@ public class AsciiTable {
 		return randomASCII.toString();
 	}
 
+    private static int[] getTableDimensions(Scanner sc) {
+        int[] dimensions = new int[2];
+        boolean validInput = false;
+
+        while (!validInput) {
+            System.out.print("Enter the dimension of the table. Please use the format rowxcol (ex. 3x3): ");
+            String input = sc.next();
+
+			// Check if input matches pattern like 1x1 or 3x3
+			if (input.contains("x")) {
+				String[] parts = input.split("x");
+
+				if (parts.length == 2) {
+					try {
+						int row = Integer.parseInt(parts[0]);
+						int col = Integer.parseInt(parts[1]);
+
+						if (row > 0 && col > 0) {
+                            dimensions[0] = row;
+                            dimensions[1] = col;
+                            validInput = true;
+						} else {
+							System.out.println("Rows and columns must be greater than 0.");
+						}
+					} catch (NumberFormatException e) {
+						System.out.println("Both row and column must be valid numbers.");
+					}
+				} else {
+					System.out.println("Invalid format. Please use the format rowxcol (ex. 1x1, 3x3) with lowercase 'x'.");
+				}
+			} else {
+				System.out.println("Invalid format. Please use the format rowxcol (ex. 1x1, 3x3) with lowercase 'x'.");
+			}
+        }
+
+        System.out.println();
+
+        return dimensions;
+    }
+
     // Check for existing file or create a new one
     private static String checkOrCreateFile(AsciiTable app, Scanner sc, String[] args) {
         String fileName = null;
@@ -75,13 +115,11 @@ public class AsciiTable {
                 fileName += ".txt";
             }
 
-            System.out.print("Enter number of rows: ");
-            int rows = sc.nextInt();
+            int[] tableDimensions = getTableDimensions(sc);
+            int row = tableDimensions[0];
+            int col = tableDimensions[1];
 
-            System.out.print("Enter number of columns: ");
-            int cols = sc.nextInt();
-
-            generateAndSave(fileName, rows, cols);
+            generateAndSave(fileName, row, col);
             fileLoaded = app.loadFromFile(fileName);
         }
 
@@ -103,7 +141,7 @@ public class AsciiTable {
                 }
                 writer.println(); 
             }
-            System.out.println("New table generated and saved to " + fileName + "\n");
+            System.out.println("New table generated and saved to " + fileName);
         } catch (IOException e) {
             System.out.println("Error writing to file: " + e.getMessage());
         }
@@ -145,14 +183,12 @@ public class AsciiTable {
             return;
         }
 
-        System.out.print("Enter new number of rows: ");
-        int newRows = sc.nextInt();
-
-        System.out.print("Enter new number of columns: ");
-        int newCols = sc.nextInt();
+        int[] tableDimensions = getTableDimensions(sc);
+        int row = tableDimensions[0];
+        int col = tableDimensions[1];
 
         // Regenerate table and overwrite file
-        generateAndSave(fileName, newRows, newCols);
+        generateAndSave(fileName, row, col);
 
         // Reload table into memory
         loadFromFile(fileName);
