@@ -31,6 +31,7 @@ public class Main {
 
                 case "edit":
                     System.out.println("Editing...");
+                    app.edit(sc);
                     break;
 
                 case "add_row":

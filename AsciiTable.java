@@ -202,6 +202,91 @@ public class AsciiTable {
         }
     }
 
+    // Edit a cell in the table
+    public void edit(Scanner sc) {
+        if (table.isEmpty()) {
+            System.out.println("Table is empty. Please load or generate a table first.\n");
+            return;
+        }
+
+        int row = -1, col = -1;
+        boolean validIndex = false;
+
+        // --- Get valid cell index ---
+        while (!validIndex) {
+            System.out.print("Enter cell index to edit (rowxcol, ex. 0x0): ");
+            String input = sc.next();
+
+            if (input.contains("x")) {
+                String[] parts = input.split("x");
+                if (parts.length == 2) {
+                    try {
+                        row = Integer.parseInt(parts[0]);
+                        col = Integer.parseInt(parts[1]);
+
+                        if (row >= 0 && row < table.size() && col >= 0 && col < table.get(row).size()) {
+                            validIndex = true;
+                        } else {
+                            System.out.println("Index out of table bounds. Try again.");
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Both row and column must be numbers.");
+                    }
+                } else {
+                    System.out.println("Invalid format. Use rowxcol (e.g., 0x0).");
+                }
+            } else {
+                System.out.println("Invalid format. Use rowxcol (e.g., 0x0).");
+            }
+        }
+
+        Pair cell = table.get(row).get(col);
+        String oldKey = cell.getKey();
+        String oldValue = cell.getValue();
+
+        sc.nextLine(); // Consume leftover newline
+
+        // --- Ask user what to edit ---
+        String choice = "";
+        while (!choice.equals("key") && !choice.equals("value") && !choice.equals("both")) {
+            System.out.print("Do you want to edit the key, value, or both? (key/value/both): ");
+            choice = sc.nextLine().trim().toLowerCase();
+            if (!choice.equals("key") && !choice.equals("value") && !choice.equals("both")) {
+                System.out.println("Invalid choice. Enter 'key', 'value', or 'both'.");
+            }
+        }
+
+        String newKey = oldKey;
+        String newValue = oldValue;
+
+        // --- Edit based on choice ---
+        if (choice.equals("key") || choice.equals("both")) {
+            System.out.print("Enter new key (leave blank to keep '" + oldKey + "'): ");
+            String inputKey = sc.nextLine().trim();
+            if (!inputKey.isEmpty()) {
+                newKey = inputKey;
+            }
+        }
+
+        if (choice.equals("value") || choice.equals("both")) {
+            System.out.print("Enter new value (leave blank to keep '" + oldValue + "'): ");
+            String inputValue = sc.nextLine().trim();
+            if (!inputValue.isEmpty()) {
+                newValue = inputValue;
+            }
+        }
+
+        // --- Update cell ---
+        cell.setKey(newKey);
+        cell.setValue(newValue);
+
+        System.out.println("\nCell updated:");
+        System.out.println("Old value -> (" + oldKey + " " + oldValue + ")");
+        System.out.println("New value -> (" + newKey + " " + newValue + ")\n");
+
+        saveToFile(); // Save changes
+    }
+
     // Sort by unicode value a specific row based on user input
     public void sortRow(Scanner sc) {
         if (table.isEmpty()) {
