@@ -5,7 +5,7 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         AsciiTable app = new AsciiTable();
         String fileName = AsciiTable.checkOrCreateFile(sc, args);
-        
+
         app.setFileName(fileName);
         app.loadFromFile(fileName);
         app.printTable();
@@ -39,6 +39,7 @@ public class Main {
 
                 case "sort":
                     System.out.println("Sorting...");
+                    app.sortRow(sc);
                     break;
 
                 case "print":

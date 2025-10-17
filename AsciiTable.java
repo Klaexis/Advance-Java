@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Random;
 
 public class AsciiTable {
@@ -199,6 +200,74 @@ public class AsciiTable {
         } catch (IOException e) {
             System.out.println("Error writing to file: " + e.getMessage());
         }
+    }
+
+    // Sort by unicode value a specific row based on user input
+    public void sortRow(Scanner sc) {
+        if (table.isEmpty()) {
+            System.out.println("No data to sort. Please load or generate a table first.\n");
+            return;
+        }
+
+        int rowIndex = -1;
+        String order = null;
+
+        // Ask for row number
+        boolean validRow = false;
+        while (!validRow) {
+            System.out.print("Enter the row number to sort (1-" + table.size() + "): ");
+            String input = sc.next();
+
+            try {
+                rowIndex = Integer.parseInt(input) - 1; // user inputs 1-based index
+                if (rowIndex >= 0 && rowIndex < table.size()) {
+                    validRow = true;
+                } else {
+                    System.out.println("Row number out of range. Try again.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a numeric value.");
+            }
+        }
+
+        // Ask for sort order
+        boolean validOrder = false;
+        while (!validOrder) {
+            System.out.print("Sort order <asc/desc>: ");
+            order = sc.next().toLowerCase();
+
+            if (order.equals("asc") || order.equals("desc")) {
+                validOrder = true;
+            } else {
+                System.out.println("Invalid order. Please enter only 'asc' or 'desc'.");
+            }
+        }
+
+        // --- Perform sorting without lambda ---
+        ArrayList<Pair> selectedRow = table.get(rowIndex);
+
+        // Make a final copy for use in comparator
+        final String sortOrder = order;
+        Comparator<Pair> comparator = new Comparator<Pair>() {
+            @Override
+            public int compare(Pair p1, Pair p2) {
+                String concat1 = p1.getKey() + p1.getValue();
+                String concat2 = p2.getKey() + p2.getValue();
+                if (sortOrder.equals("asc")) {
+                    return concat1.compareTo(concat2);
+                } else {
+                    return concat2.compareTo(concat1);
+                }
+            }
+        };
+
+        selectedRow.sort(comparator);
+
+        System.out.println("\nRow " + (rowIndex + 1) + " sorted in " + order.toUpperCase() + " order.\n");
+
+        // Save changes and print updated table
+        saveToFile();
+        printTable();
     }
 
     public void resetTable(Scanner sc) {
