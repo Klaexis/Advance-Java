@@ -36,6 +36,7 @@ public class Main {
 
                 case "add_row":
                     System.out.println("Adding Row...");
+                    app.addRow(sc);
                     break;
 
                 case "sort":

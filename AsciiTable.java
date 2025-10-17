@@ -20,9 +20,11 @@ public class AsciiTable {
         table = new ArrayList<>();
     }
 
+    // Set the file name
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
+
 	//Generate a random 3 character ASCII String
 	private static String generateRandomAscii() {
 		Random random = new Random();
@@ -36,6 +38,7 @@ public class AsciiTable {
 		return randomASCII.toString();
 	}
 
+    // Get table dimensions from user
     private static int[] getTableDimensions(Scanner sc) {
         int[] dimensions = new int[2];
         boolean validInput = false;
@@ -202,7 +205,7 @@ public class AsciiTable {
         }
     }
 
-    // Edit a cell in the table
+    // Edit the key/value/both of a cell
     public void edit(Scanner sc) {
         if (table.isEmpty()) {
             System.out.println("Table is empty. Please load or generate a table first.\n");
@@ -212,7 +215,7 @@ public class AsciiTable {
         int row = -1, col = -1;
         boolean validIndex = false;
 
-        // --- Get valid cell index ---
+        // Get valid cell index from user
         while (!validIndex) {
             System.out.print("Enter cell index to edit (rowxcol, ex. 0x0): ");
             String input = sc.next();
@@ -246,7 +249,7 @@ public class AsciiTable {
 
         sc.nextLine(); // Consume leftover newline
 
-        // --- Ask user what to edit ---
+        // Ask what to edit: key, value, or both
         String choice = "";
         while (!choice.equals("key") && !choice.equals("value") && !choice.equals("both")) {
             System.out.print("Do you want to edit the key, value, or both? (key/value/both): ");
@@ -259,7 +262,7 @@ public class AsciiTable {
         String newKey = oldKey;
         String newValue = oldValue;
 
-        // --- Edit based on choice ---
+        // Get new key/value based on choice
         if (choice.equals("key") || choice.equals("both")) {
             System.out.print("Enter new key (leave blank to keep '" + oldKey + "'): ");
             String inputKey = sc.nextLine().trim();
@@ -276,7 +279,7 @@ public class AsciiTable {
             }
         }
 
-        // --- Update cell ---
+        // Update the cell
         cell.setKey(newKey);
         cell.setValue(newValue);
 
@@ -284,7 +287,74 @@ public class AsciiTable {
         System.out.println("Old value -> (" + oldKey + " " + oldValue + ")");
         System.out.println("New value -> (" + newKey + " " + newValue + ")\n");
 
-        saveToFile(); // Save changes
+        saveToFile();
+    }
+
+    // Add a new row to the table with random key-value pairs
+    public void addRow(Scanner sc) {
+        if (table.isEmpty()) {
+            System.out.println("Table is empty. Please load or generate a table first.\n");
+            return;
+        }
+
+        int numCells = 0;
+        boolean validNumCells = false;
+
+        // Get number of cells for the new row
+        while (!validNumCells) {
+            System.out.print("Enter the number of cells for the new row: ");
+            try {
+                numCells = sc.nextInt();
+                if (numCells > 0) {
+                    validNumCells = true;
+                } else {
+                    System.out.println("Number of cells must be greater than 0.");
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input. Please enter a number.");
+                sc.next(); // clear invalid input
+            }
+        }
+
+        int insertRow = -1; // Row number after which to insert
+        boolean validRow = false;
+
+        // Get the row number after which to insert the new row
+        while (!validRow) {
+            System.out.print("Insert the new row after which row? (0 to " + table.size() + ", 0 = before first row): ");
+            try {
+                insertRow = sc.nextInt();
+                if (insertRow >= 0 && insertRow <= table.size()) {
+                    validRow = true;
+                } else {
+                    System.out.println("Row number out of range.");
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input. Please enter a number.");
+                sc.next(); // clear invalid input
+            }
+        }
+
+        // Generate new row
+        ArrayList<Pair> newRow = new ArrayList<>();
+        for (int i = 0; i < numCells; i++) {
+            String key = generateRandomAscii();
+            String value = generateRandomAscii();
+            newRow.add(new Pair(key, value));
+        }
+
+        // Insert new row at specified position
+        int insertIndex;
+        if (insertRow == 0) {
+            insertIndex = 0;
+        } else {
+            insertIndex = insertRow;
+        }
+        table.add(insertIndex, newRow);
+
+        System.out.println("\nNew row added successfully!\n");
+        saveToFile();
+        printTable();
     }
 
     // Sort by unicode value a specific row based on user input
@@ -328,11 +398,12 @@ public class AsciiTable {
             }
         }
 
-        // --- Perform sorting without lambda ---
         ArrayList<Pair> selectedRow = table.get(rowIndex);
 
         // Make a final copy for use in comparator
         final String sortOrder = order;
+
+        // Sort the selected row
         Comparator<Pair> comparator = new Comparator<Pair>() {
             @Override
             public int compare(Pair p1, Pair p2) {
@@ -355,6 +426,7 @@ public class AsciiTable {
         printTable();
     }
 
+    // Reset table with new dimensions and new key-value pairs
     public void resetTable(Scanner sc) {
         if (fileName == null) {
             System.out.println("No file associated with this table.");
