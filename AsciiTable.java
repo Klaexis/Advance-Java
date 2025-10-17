@@ -254,6 +254,7 @@ public class AsciiTable {
 			System.out.print("[ search ] - Search\n"+
 							 "[ edit ] - Edit\n"+
 							 "[ add_row ] - Add Row\n"+
+                             "[ sort ] - Sort\n"+
 							 "[ print ] - Print\n"+
                              "[ reset ] - Reset\n"+
 							 "[ x ] - Exit\n"+
@@ -272,6 +273,9 @@ public class AsciiTable {
 					break;
 				case "add_row": //Add Row
                     System.out.println("Adding Row...");
+					break;
+                case "sort": //Sort
+                    System.out.println("Sorting...");
 					break;
 				case "print": //Print
 					System.out.println("Printing...");
