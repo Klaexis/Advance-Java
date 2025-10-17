@@ -31,6 +31,66 @@ public class AsciiTable {
 		return randomASCII.toString();
 	}
 
+    private static String checkOrCreateFile(AsciiTable app, Scanner sc, String[] args) {
+        String fileName = null;
+        boolean fileLoaded = false;
+
+        // If the file name was provided as argument
+        if (args.length > 0 && !args[0].trim().isEmpty()) {
+            fileName = args[0].trim();
+            if (!fileName.endsWith(".txt")) {
+                fileName += ".txt";
+            }
+
+            File file = new File(fileName);
+
+            // If the file name was invalid (non-existing) ask user to input valid file name
+            while (!file.exists()) {
+                System.out.print("File not found. Please enter a valid filename: ");
+                fileName = sc.nextLine().trim();
+
+                if (!fileName.endsWith(".txt") && !fileName.isEmpty()) {
+                    fileName += ".txt";
+                }
+
+                // If user enters blank, break to create a new file instead
+                if (fileName.isEmpty()) break;
+
+                file = new File(fileName);
+            }
+
+            // If file exists, load its content
+            if (file.exists()) {
+                fileLoaded = app.loadFromFile(fileName);
+            }
+        }
+
+        // If no valid file found or argument missing, create new one
+        if (fileName == null || fileName.trim().isEmpty()) {
+            System.out.print("Enter a new file name to create: ");
+            fileName = sc.nextLine().trim();
+
+            if (!fileName.endsWith(".txt")) {
+                fileName += ".txt";
+            }
+
+            System.out.print("Enter number of rows: ");
+            int rows = sc.nextInt();
+
+            System.out.print("Enter number of columns: ");
+            int cols = sc.nextInt();
+
+            generateAndSave(fileName, rows, cols);
+            fileLoaded = app.loadFromFile(fileName);
+        }
+
+        if (!fileLoaded) {
+            System.out.println("Failed to load file.");
+        }
+
+        return fileName;
+    }
+
     // Generate random table data and save to file
     public static void generateAndSave(String fileName, int rows, int cols) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
@@ -99,61 +159,9 @@ public class AsciiTable {
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
         AsciiTable app = new AsciiTable();
-        String fileName = null;
-        boolean fileLoaded = false;
+        String fileName = checkOrCreateFile(app, sc, args);
 
-        // If the file name was provided as argument on runtime
-        if (args.length > 0 && !args[0].trim().isEmpty()) {
-            fileName = args[0].trim();
-            if (!fileName.endsWith(".txt")) {
-                fileName += ".txt"; 
-            }
-
-            File file = new File(fileName);
-
-            // If the file name was invalid (non-existing) ask user to input valid file name
-            while (!file.exists()) {
-                System.out.print("File not found. Please enter a valid filename: ");
-                fileName = sc.nextLine().trim();
-
-                if (!fileName.endsWith(".txt") && !fileName.isEmpty()) {
-                    fileName += ".txt";
-                }
-
-                // If user enters blank, break to create a new file instead
-                if (fileName.isEmpty()) break;
-
-                file = new File(fileName);
-            }
-
-            // If file exists, load its content
-            if (file.exists()) {
-                fileLoaded = app.loadFromFile(fileName);
-            }
-        }
-
-        // If no argument was passed on runtime, create a new file and generate a table content for it
-        if (fileName == null || fileName.trim().isEmpty()) {
-            System.out.print("Enter a new file name to create: ");
-            fileName = sc.nextLine().trim();
-
-            // Save file with .txt extension
-            if (!fileName.endsWith(".txt")) {
-                fileName += ".txt";
-            }
-
-            System.out.print("Enter number of rows: ");
-            int rows = sc.nextInt();
-
-            System.out.print("Enter number of columns: ");
-            int cols = sc.nextInt();
-
-            generateAndSave(fileName, rows, cols);
-            fileLoaded = app.loadFromFile(fileName);
-        }
-
-        // Print table if loaded successfully
-        if (fileLoaded) app.printTable(fileName);
+        app.printTable(fileName);
 		
 		boolean isRunning = true;
 		while(isRunning) {
