@@ -27,6 +27,7 @@ public class Main {
             switch (choice) {
                 case "search":
                     System.out.println("Searching...");
+                    app.search(sc);
                     break;
 
                 case "edit":

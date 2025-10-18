@@ -185,6 +185,74 @@ public class AsciiTable {
         }
     }
 
+    // Helper method to count substring occurrences
+    private int countOccurrences(String text, String search) {
+        int count = 0;
+        int index = 0;
+
+        while ((index = text.indexOf(search, index)) != -1) {
+            count++;
+            index += search.length();
+        }
+        return count;
+    }
+
+    // Search for character/s in both key and value of each cell
+    public void search(Scanner sc) {
+        if (table.isEmpty()) {
+            System.out.println("Table is empty. Please load or generate a table first.\n");
+            return;
+        }
+
+        System.out.print("Enter character/s you want to search: ");
+        String input = sc.next();
+
+        boolean foundAny = false;
+
+        for (int i = 0; i < table.size(); i++) {
+            ArrayList<Pair> row = table.get(i);
+            
+            for (int j = 0; j < row.size(); j++) {
+                Pair cell = row.get(j);
+                String key = cell.getKey();
+                String value = cell.getValue();
+
+                int keyCount = countOccurrences(key, input);
+                int valueCount = countOccurrences(value, input);
+
+                // If found in key or value or both
+                if (keyCount > 0 || valueCount > 0) {
+                    foundAny = true;
+
+                    if (keyCount > 0 && valueCount > 0) {
+                        System.out.println(
+                            keyCount + " <" + input + "> occurrence/s at key and " 
+                            + valueCount + " <" + input + "> occurrence/s at value "
+                            + "of [" + i + "," + j + "]"
+                        );
+                    } else if (keyCount > 0) {
+                        System.out.println(
+                            keyCount + " <" + input + "> occurrence/s at key "
+                            + "of [" + i + "," + j + "]"
+                        );
+                    } else if (valueCount > 0) {
+                        System.out.println(
+                            valueCount + " <" + input + "> occurrence/s at value "
+                            + "of [" + i + "," + j + "]"
+                        );
+                    }
+                }
+            }
+        }
+
+        if (!foundAny) {
+            System.out.println("No occurrences found for \"" + input + "\". \n"); // No occurrences found for "<input>"
+        } else {
+            System.out.println();
+        }
+
+    }
+
     // Save the current table back to file
     public void saveToFile() {
         if (fileName == null) {
@@ -192,7 +260,7 @@ public class AsciiTable {
             return;
         }
 
-        try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) { // Overwrite existing file
             for (ArrayList<Pair> row : table) {
                 for (Pair p : row) {
                     writer.print(p.toString() + " ");
