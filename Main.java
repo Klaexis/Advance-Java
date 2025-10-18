@@ -3,12 +3,14 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        AsciiTable app = new AsciiTable();
-        String fileName = AsciiTable.checkOrCreateFile(sc, args);
+        
+        AsciiFileHandler asciiFileHandler = new AsciiFileHandler();
+        String fileName = AsciiFileHandler.checkOrCreateFile(sc, args);
+        AsciiTable asciiTable = new AsciiTable(asciiFileHandler, fileName);
 
-        app.setFileName(fileName);
-        app.loadFromFile(fileName);
-        app.printTable();
+        asciiFileHandler.setFileName(fileName);
+        asciiFileHandler.loadFromFile(fileName, asciiTable.getTable());
+        asciiTable.printTable();
 
         boolean isRunning = true;
         while (isRunning) {
@@ -27,32 +29,32 @@ public class Main {
             switch (choice) {
                 case "search":
                     System.out.println("Searching...");
-                    app.search(sc);
+                    asciiTable.search(sc);
                     break;
 
                 case "edit":
                     System.out.println("Editing...");
-                    app.edit(sc);
+                    asciiTable.edit(sc);
                     break;
 
                 case "add_row":
                     System.out.println("Adding Row...");
-                    app.addRow(sc);
+                    asciiTable.addRow(sc);
                     break;
 
                 case "sort":
                     System.out.println("Sorting...");
-                    app.sortRow(sc);
+                    asciiTable.sortRow(sc);
                     break;
 
                 case "print":
                     System.out.println("Printing...");
-                    app.printTable();
+                    asciiTable.printTable();
                     break;
 
                 case "reset":
                     System.out.println("Resetting...");
-                    app.resetTable(sc);
+                    asciiTable.resetTable(sc);
                     break;
 
                 case "x":

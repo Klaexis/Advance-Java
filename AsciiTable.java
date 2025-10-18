@@ -1,28 +1,23 @@
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Random;
 
 public class AsciiTable {
 	private ArrayList<ArrayList<Pair>> table;
+    private AsciiFileHandler fileHandler;
     private String fileName;
 	
     // Initialize the ArrayList
-    public AsciiTable() {
-        table = new ArrayList<>();
+    public AsciiTable(AsciiFileHandler fileHandler, String fileName) {
+        this.table = new ArrayList<>();
+        this.fileHandler = fileHandler;
+        this.fileName = fileName;
     }
 
-    // Set the file name
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    // Getter Method for table
+    public ArrayList<ArrayList<Pair>> getTable() {
+        return table;
     }
 
 	//Generate a random 3 character ASCII String
@@ -39,7 +34,7 @@ public class AsciiTable {
 	}
 
     // Generate a row with random key-value pairs
-    private static ArrayList<Pair> generateRandomKeyPair(int numCells) {
+    public static ArrayList<Pair> generateRandomKeyPair(int numCells) {
         ArrayList<Pair> keyPair = new ArrayList<>();
         for (int i = 0; i < numCells; i++) {
             String key = generateRandomAscii();
@@ -50,7 +45,7 @@ public class AsciiTable {
     }
 
     // Get table dimensions from user
-    private static int[] getTableDimensions(Scanner sc) {
+    public static int[] getTableDimensions(Scanner sc) {
         int[] dimensions = new int[2];
         boolean validInput = false;
 
@@ -87,139 +82,6 @@ public class AsciiTable {
         System.out.println();
 
         return dimensions;
-    }
-
-    // Check for existing file or create a new one
-    public static String checkOrCreateFile(Scanner sc, String[] args) {
-        String fileName = null;
-        boolean fileLoaded = false;
-
-        // If the file name was provided as argument
-        if (args.length > 0 && !args[0].trim().isEmpty()) {
-            fileName = args[0].trim();
-            if (!fileName.endsWith(".txt")) {
-                fileName += ".txt";
-            }
-
-            File file = new File(fileName);
-
-            // If the file name was invalid (non-existing) ask user to input valid file name
-            while (!file.exists()) {
-                System.out.print("File not found. Please enter a valid filename: ");
-                fileName = sc.nextLine().trim();
-
-                if (!fileName.endsWith(".txt") && !fileName.isEmpty()) {
-                    fileName += ".txt";
-                }
-
-                // If user enters blank, break to create a new file instead
-                if (fileName.isEmpty()) break;
-
-                file = new File(fileName);
-            }
-
-            // If file exists, load its content
-            if (file.exists()) {
-                fileLoaded = true;
-            }
-        }
-
-        // If no valid file found or argument missing, create new one
-        if (fileName == null || fileName.trim().isEmpty()) {
-            System.out.print("Enter a new file name to create: ");
-            fileName = sc.nextLine().trim();
-
-            if (!fileName.endsWith(".txt")) {
-                fileName += ".txt";
-            }
-
-            int[] tableDimensions = getTableDimensions(sc);
-            int row = tableDimensions[0];
-            int col = tableDimensions[1];
-
-            generateAndSave(fileName, row, col);
-            fileLoaded = true;
-        }
-
-        if (!fileLoaded) {
-            System.out.println("Failed to load file.");
-        }
-        System.out.println();
-
-        return fileName;
-    }
-
-    // Generate random table data and save to file
-    public static void generateAndSave(String fileName, int rows, int cols) {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
-            for (int i = 0; i < rows; i++) {
-                ArrayList<Pair> row = generateRandomKeyPair(cols);
-                for (Pair p : row) {
-                    writer.print(p.toString() + " ");
-                }
-                writer.println();
-            }
-            System.out.println("New table generated and saved to " + fileName);
-        } catch (IOException e) {
-            System.out.println("Error writing to file: " + e.getMessage());
-        }
-        System.out.println();
-    }
-	
-    // Read the key-value pairs from file and store in table
-    public boolean loadFromFile(String fileName) {
-        File file = new File(fileName);
-        if (!file.exists()) {
-            System.out.println("File not found: " + fileName);
-            return false;
-        }
-
-        // Regex pattern to match key-value pairs in the format: (key value)
-        //  \(        match literal '('
-        //  ([^\\s]+) capture the key (any non-space characters)
-        //  \\s       match a space between key and value
-        //  (.*?)     capture the value (non-greedy, allows ')' inside value)
-        //  \\)       match literal ')'
-        //  (?=\\s|$) ensure ')' is followed by a space or end of line (end of pair)
-        Pattern pattern = Pattern.compile("\\(([^\\s]+)\\s(.*?)\\)(?=\\s|$)");
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            table.clear();
-            while ((line = reader.readLine()) != null) {
-                Matcher matcher = pattern.matcher(line);
-                ArrayList<Pair> row = new ArrayList<>();
-                while (matcher.find()) {
-                    row.add(new Pair(matcher.group(1), matcher.group(2)));
-                }
-                table.add(row);
-            }
-            System.out.println("\nFile loaded successfully!\n");
-            return true;
-        } catch (IOException e) {
-            System.out.println("Error reading file: " + e.getMessage());
-            return false;
-        }
-    }
-
-    // Save the current table back to file
-    public void saveToFile() {
-        if (fileName == null) {
-            System.out.println("No file associated with this table.");
-            return;
-        }
-
-        try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) { // Overwrite existing file
-            for (ArrayList<Pair> row : table) {
-                for (Pair p : row) {
-                    writer.print(p.toString() + " ");
-                }
-                writer.println();
-            }
-            System.out.println("Table saved to " + fileName + "\n");
-        } catch (IOException e) {
-            System.out.println("Error writing to file: " + e.getMessage());
-        }
     }
 
     // Helper method to count substring occurrences
@@ -372,7 +234,8 @@ public class AsciiTable {
         System.out.println("Old value -> (" + oldKey + " " + oldValue + ")");
         System.out.println("New value -> (" + newKey + " " + newValue + ")\n");
 
-        saveToFile();
+        fileHandler.setFileName(fileName);
+        fileHandler.saveToFile(table);
     }
 
     // Add a new row to the table with random key-value pairs
@@ -433,7 +296,8 @@ public class AsciiTable {
         table.add(insertIndex, newRow);
 
         System.out.println("\nNew row added successfully!\n");
-        saveToFile();
+        fileHandler.setFileName(fileName);
+        fileHandler.saveToFile(table);
         printTable();
     }
 
@@ -502,7 +366,8 @@ public class AsciiTable {
         System.out.println("\nRow " + (rowIndex + 1) + " sorted in " + order.toUpperCase() + " order.\n");
 
         // Save changes and print updated table
-        saveToFile();
+        fileHandler.setFileName(fileName);
+        fileHandler.saveToFile(table);
         printTable();
     }
 
@@ -523,7 +388,8 @@ public class AsciiTable {
             table.add(generateRandomKeyPair(cols));
         }
 
-        saveToFile();
+        fileHandler.setFileName(fileName);
+        fileHandler.saveToFile(table);
         printTable();
     }
 	
