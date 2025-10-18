@@ -94,7 +94,7 @@ public class AsciiTable {
 
         while ((index = text.indexOf(search, index)) != -1) {
             count++;
-            index += search.length();
+            index++;
         }
         return count;
     }
