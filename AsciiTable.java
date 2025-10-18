@@ -38,6 +38,17 @@ public class AsciiTable {
 		return randomASCII.toString();
 	}
 
+    // Generate a row with random key-value pairs
+    private static ArrayList<Pair> generateRandomKeyPair(int numCells) {
+        ArrayList<Pair> keyPair = new ArrayList<>();
+        for (int i = 0; i < numCells; i++) {
+            String key = generateRandomAscii();
+            String value = generateRandomAscii();
+            keyPair.add(new Pair(key, value));
+        }
+        return keyPair;
+    }
+
     // Get table dimensions from user
     private static int[] getTableDimensions(Scanner sc) {
         int[] dimensions = new int[2];
@@ -142,12 +153,11 @@ public class AsciiTable {
     public static void generateAndSave(String fileName, int rows, int cols) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
             for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < cols; j++) {
-                    String key = generateRandomAscii();
-                    String value = generateRandomAscii();
-                    writer.printf("(%s %s) ", key, value);
+                ArrayList<Pair> row = generateRandomKeyPair(cols);
+                for (Pair p : row) {
+                    writer.print(p.toString() + " ");
                 }
-                writer.println(); 
+                writer.println();
             }
             System.out.println("New table generated and saved to " + fileName);
         } catch (IOException e) {
@@ -411,12 +421,7 @@ public class AsciiTable {
         }
 
         // Generate new row
-        ArrayList<Pair> newRow = new ArrayList<>();
-        for (int i = 0; i < numCells; i++) {
-            String key = generateRandomAscii();
-            String value = generateRandomAscii();
-            newRow.add(new Pair(key, value));
-        }
+        ArrayList<Pair> newRow = generateRandomKeyPair(numCells);
 
         // Insert new row at specified position
         int insertIndex;
@@ -515,13 +520,7 @@ public class AsciiTable {
         table.clear();
 
         for (int i = 0; i < rows; i++) {
-            ArrayList<Pair> rowList = new ArrayList<>();
-            for (int j = 0; j < cols; j++) {
-                String key = generateRandomAscii();
-                String value = generateRandomAscii();
-                rowList.add(new Pair(key, value));
-            }
-            table.add(rowList);
+            table.add(generateRandomKeyPair(cols));
         }
 
         saveToFile();
