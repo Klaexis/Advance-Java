@@ -1,3 +1,5 @@
+package asciiproject.controller;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -8,17 +10,18 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import asciiproject.model.Pair;
 
 public class AsciiFileHandler {
     private String fileName;
     private static final String FOLDER_NAME = "text files"; // Folder for all .txt files
 
-    // Set the file name (stores only the base name, not full path)
+    // Set the file name 
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
 
-    // ✅ Ensure the folder exists
+    // Check if folder exists, if not create it
     private static File getFolder() {
         File folder = new File(FOLDER_NAME);
         if (!folder.exists()) {
@@ -28,7 +31,7 @@ public class AsciiFileHandler {
         return folder;
     }
 
-    // ✅ Combine folder + filename into full file path
+    // Get the full file path inside the folder
     private static File getFilePath(String fileName) {
         return new File(getFolder(), fileName);
     }
@@ -38,9 +41,9 @@ public class AsciiFileHandler {
         String fileName = null;
         boolean fileLoaded = false;
 
-        getFolder(); // ensure folder exists before we do anything
+        getFolder(); // Ensure folder exists
 
-        // If file name is passed via arguments
+        // Check command line argument
         if (args.length > 0 && !args[0].trim().isEmpty()) {
             fileName = args[0].trim();
             if (!fileName.endsWith(".txt")) {
@@ -58,7 +61,7 @@ public class AsciiFileHandler {
                     fileName += ".txt";
                 }
 
-                // User enters nothing → create a new file instead
+                // Break if user inputs empty to create new file 
                 if (fileName.isEmpty()) break;
 
                 file = getFilePath(fileName);
@@ -94,7 +97,7 @@ public class AsciiFileHandler {
         return fileName;
     }
 
-    // ✅ Generate and save a random table into "text files" folder
+    // Generate new table and save to file
     public static void generateAndSave(String fileName, int rows, int cols) {
         File file = getFilePath(fileName);
 
@@ -114,7 +117,7 @@ public class AsciiFileHandler {
         System.out.println();
     }
 
-    // ✅ Load from "text files" folder
+    // Load table from file 
     public boolean loadFromFile(String fileName, ArrayList<ArrayList<Pair>> table) {
         File file = getFilePath(fileName);
         if (!file.exists()) {
@@ -143,7 +146,7 @@ public class AsciiFileHandler {
         }
     }
 
-    // ✅ Save table back to file inside "text files"
+    // Save table to file
     public void saveToFile(ArrayList<ArrayList<Pair>> table) {
         if (fileName == null) {
             System.out.println("No file associated with this table.");
