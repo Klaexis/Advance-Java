@@ -185,8 +185,28 @@ public class AsciiTable {
         }
     }
 
+    // Save the current table back to file
+    public void saveToFile() {
+        if (fileName == null) {
+            System.out.println("No file associated with this table.");
+            return;
+        }
+
+        try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) { // Overwrite existing file
+            for (ArrayList<Pair> row : table) {
+                for (Pair p : row) {
+                    writer.print(p.toString() + " ");
+                }
+                writer.println();
+            }
+            System.out.println("Table saved to " + fileName + "\n");
+        } catch (IOException e) {
+            System.out.println("Error writing to file: " + e.getMessage());
+        }
+    }
+
     // Helper method to count substring occurrences
-    private int countOccurrences(String text, String search) {
+    private static int countOccurrences(String text, String search) {
         int count = 0;
         int index = 0;
 
@@ -211,7 +231,7 @@ public class AsciiTable {
 
         for (int i = 0; i < table.size(); i++) {
             ArrayList<Pair> row = table.get(i);
-            
+
             for (int j = 0; j < row.size(); j++) {
                 Pair cell = row.get(j);
                 String key = cell.getKey();
@@ -253,26 +273,6 @@ public class AsciiTable {
 
     }
 
-    // Save the current table back to file
-    public void saveToFile() {
-        if (fileName == null) {
-            System.out.println("No file associated with this table.");
-            return;
-        }
-
-        try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) { // Overwrite existing file
-            for (ArrayList<Pair> row : table) {
-                for (Pair p : row) {
-                    writer.print(p.toString() + " ");
-                }
-                writer.println();
-            }
-            System.out.println("Table saved to " + fileName + "\n");
-        } catch (IOException e) {
-            System.out.println("Error writing to file: " + e.getMessage());
-        }
-    }
-
     // Edit the key/value/both of a cell
     public void edit(Scanner sc) {
         if (table.isEmpty()) {
@@ -280,7 +280,7 @@ public class AsciiTable {
             return;
         }
 
-        int row = -1, col = -1;
+        int row = 0, col = 0; 
         boolean validIndex = false;
 
         // Get valid cell index from user
