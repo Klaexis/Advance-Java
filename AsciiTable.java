@@ -164,7 +164,14 @@ public class AsciiTable {
             return false;
         }
 
-        Pattern pattern = Pattern.compile("\\(([^\\s]+)\\s([^)]*)\\)");
+        // Regex pattern to match key-value pairs in the format: (key value)
+        //  \(        match literal '('
+        //  ([^\\s]+) capture the key (any non-space characters)
+        //  \\s       match a space between key and value
+        //  (.*?)     capture the value (non-greedy, allows ')' inside value)
+        //  \\)       match literal ')'
+        //  (?=\\s|$) ensure ')' is followed by a space or end of line (end of pair)
+        Pattern pattern = Pattern.compile("\\(([^\\s]+)\\s(.*?)\\)(?=\\s|$)");
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
