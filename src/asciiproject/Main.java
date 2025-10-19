@@ -16,7 +16,7 @@ public class Main {
         asciiTable.printTable();
 
         boolean isRunning = true;
-        while (isRunning) {
+        while(isRunning) {
             System.out.print("[ search ] - Search\n" +
                              "[ edit ] - Edit\n" +
                              "[ add_row ] - Add Row\n" +
@@ -29,7 +29,7 @@ public class Main {
             String choice = sc.next().toLowerCase();
             System.out.println();
 
-            switch (choice) {
+            switch(choice) {
                 case "search":
                     System.out.println("Searching...");
                     asciiTable.search(sc);
