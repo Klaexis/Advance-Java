@@ -24,7 +24,7 @@ public class AsciiFileHandler {
     // Check if folder exists, if not create it
     private static File getFolder() {
         File folder = new File(FOLDER_NAME);
-        if (!folder.exists()) {
+        if(!folder.exists()) {
             folder.mkdir(); // create folder if it doesn’t exist
             System.out.println("Created folder: " + folder.getAbsolutePath());
         }
@@ -35,6 +35,26 @@ public class AsciiFileHandler {
     private static File getFilePath(String fileName) {
         return new File(getFolder(), fileName);
     }
+    
+    // Generate new table and save to file
+    public static void generateAndSave(String fileName, int rows, int cols) {
+        File file = getFilePath(fileName);
+
+        try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
+            for(int i = 0; i < rows; i++) {
+                ArrayList<Pair> row = AsciiTable.generateRandomKeyPair(cols);
+                for(Pair p : row) {
+                    writer.print(p.toString() + " ");
+                }
+                writer.println();
+            }
+            System.out.println("New table generated and saved to " + file.getPath());
+        } catch(IOException e) {
+            System.out.println("Error writing to file: " + e.getMessage());
+        }
+
+        System.out.println();
+    }
 
     // Check for existing file or create a new one
     public String checkOrCreateFile(Scanner sc, String[] args) {
@@ -44,40 +64,40 @@ public class AsciiFileHandler {
         getFolder(); // Ensure folder exists
 
         // Check command line argument
-        if (args.length > 0 && !args[0].trim().isEmpty()) {
+        if(args.length > 0 && !args[0].trim().isEmpty()) {
             fileName = args[0].trim();
-            if (!fileName.endsWith(".txt")) {
+            if(!fileName.endsWith(".txt")) {
                 fileName += ".txt";
             }
 
             File file = getFilePath(fileName);
 
             // Ask user if not found
-            while (!file.exists()) {
+            while(!file.exists()) {
                 System.out.print("File not found. Please enter a valid filename: ");
                 fileName = sc.nextLine().trim();
 
-                if (!fileName.endsWith(".txt") && !fileName.isEmpty()) {
+                if(!fileName.endsWith(".txt") && !fileName.isEmpty()) {
                     fileName += ".txt";
                 }
 
                 // Break if user inputs empty to create new file 
-                if (fileName.isEmpty()) break;
+                if(fileName.isEmpty()) break;
 
                 file = getFilePath(fileName);
             }
 
-            if (file.exists()) {
+            if(file.exists()) {
                 fileLoaded = true;
             }
         }
 
         // If no file found, create a new one
-        if (fileName == null || fileName.trim().isEmpty()) {
+        if(fileName == null || fileName.trim().isEmpty()) {
             System.out.print("Enter a new file name to create: ");
             fileName = sc.nextLine().trim();
 
-            if (!fileName.endsWith(".txt")) {
+            if(!fileName.endsWith(".txt")) {
                 fileName += ".txt";
             }
 
@@ -89,7 +109,7 @@ public class AsciiFileHandler {
             fileLoaded = true;
         }
 
-        if (!fileLoaded) {
+        if(!fileLoaded) {
             System.out.println("Failed to load file.");
         }
 
@@ -97,30 +117,10 @@ public class AsciiFileHandler {
         return fileName;
     }
 
-    // Generate new table and save to file
-    public static void generateAndSave(String fileName, int rows, int cols) {
-        File file = getFilePath(fileName);
-
-        try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
-            for (int i = 0; i < rows; i++) {
-                ArrayList<Pair> row = AsciiTable.generateRandomKeyPair(cols);
-                for (Pair p : row) {
-                    writer.print(p.toString() + " ");
-                }
-                writer.println();
-            }
-            System.out.println("New table generated and saved to " + file.getPath());
-        } catch (IOException e) {
-            System.out.println("Error writing to file: " + e.getMessage());
-        }
-
-        System.out.println();
-    }
-
     // Load table from file 
     public boolean loadFromFile(String fileName, ArrayList<ArrayList<Pair>> table) {
         File file = getFilePath(fileName);
-        if (!file.exists()) {
+        if(!file.exists()) {
             System.out.println("File not found: " + file.getPath());
             return false;
         }
@@ -130,17 +130,17 @@ public class AsciiFileHandler {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             table.clear();
-            while ((line = reader.readLine()) != null) {
+            while((line = reader.readLine()) != null) {
                 Matcher matcher = pattern.matcher(line);
                 ArrayList<Pair> row = new ArrayList<>();
-                while (matcher.find()) {
+                while(matcher.find()) {
                     row.add(new Pair(matcher.group(1), matcher.group(2)));
                 }
                 table.add(row);
             }
             System.out.println("\nFile loaded successfully from " + file.getPath() + "\n");
             return true;
-        } catch (IOException e) {
+        } catch(IOException e) {
             System.out.println("Error reading file: " + e.getMessage());
             return false;
         }
@@ -148,7 +148,7 @@ public class AsciiFileHandler {
 
     // Save table to file
     public void saveToFile(ArrayList<ArrayList<Pair>> table) {
-        if (fileName == null) {
+        if(fileName == null) {
             System.out.println("No file associated with this table.");
             return;
         }
@@ -156,14 +156,14 @@ public class AsciiFileHandler {
         File file = getFilePath(fileName);
 
         try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
-            for (ArrayList<Pair> row : table) {
-                for (Pair p : row) {
+            for(ArrayList<Pair> row : table) {
+                for(Pair p : row) {
                     writer.print(p.toString() + " ");
                 }
                 writer.println();
             }
             System.out.println("Table saved to " + file.getPath() + "\n");
-        } catch (IOException e) {
+        } catch(IOException e) {
             System.out.println("Error writing to file: " + e.getMessage());
         }
     }

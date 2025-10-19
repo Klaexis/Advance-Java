@@ -44,7 +44,7 @@ public class AsciiTable {
     // Generate a row with random key-value pairs
     public static ArrayList<Pair> generateRandomKeyPair(int numCells) {
         ArrayList<Pair> keyPair = new ArrayList<>();
-        for (int i = 0; i < numCells; i++) {
+        for(int i = 0; i < numCells; i++) {
             String key = generateRandomAscii();
             String value = generateRandomAscii();
             keyPair.add(new Pair(key, value));
@@ -57,27 +57,27 @@ public class AsciiTable {
         int[] dimensions = new int[2];
         boolean validInput = false;
 
-        while (!validInput) {
+        while(!validInput) {
             System.out.print("Enter the dimension of the table. Please use the format rowxcol (ex. 3x3): ");
             String input = sc.next();
 
 			// Check if input matches pattern like 1x1 or 3x3
-			if (input.contains("x")) {
+			if(input.contains("x")) {
 				String[] parts = input.split("x");
 
-				if (parts.length == 2) {
+				if(parts.length == 2) {
 					try {
 						int row = Integer.parseInt(parts[0]);
 						int col = Integer.parseInt(parts[1]);
 
-						if (row > 0 && col > 0) {
+						if(row > 0 && col > 0) {
                             dimensions[0] = row;
                             dimensions[1] = col;
                             validInput = true;
 						} else {
 							System.out.println("Rows and columns must be greater than 0.");
 						}
-					} catch (NumberFormatException e) {
+					} catch(NumberFormatException e) {
 						System.out.println("Both row and column must be valid numbers.");
 					}
 				} else {
@@ -97,7 +97,7 @@ public class AsciiTable {
         int count = 0;
         int index = 0;
 
-        while ((index = text.indexOf(search, index)) != -1) {
+        while((index = text.indexOf(search, index)) != -1) {
             count++;
             index++;
         }
@@ -106,7 +106,7 @@ public class AsciiTable {
 
     // Search for character/s in both key and value of each cell
     public void search(Scanner sc) {
-        if (table.isEmpty()) {
+        if(table.isEmpty()) {
             System.out.println("Table is empty. Please load or generate a table first.\n");
             return;
         }
@@ -116,10 +116,10 @@ public class AsciiTable {
 
         boolean foundAny = false;
 
-        for (int i = 0; i < table.size(); i++) {
+        for(int i = 0; i < table.size(); i++) {
             ArrayList<Pair> row = table.get(i);
 
-            for (int j = 0; j < row.size(); j++) {
+            for(int j = 0; j < row.size(); j++) {
                 Pair cell = row.get(j);
                 String key = cell.getKey();
                 String value = cell.getValue();
@@ -128,21 +128,21 @@ public class AsciiTable {
                 int valueCount = countOccurrences(value, input);
 
                 // If found in key or value or both
-                if (keyCount > 0 || valueCount > 0) {
+                if(keyCount > 0 || valueCount > 0) {
                     foundAny = true;
 
-                    if (keyCount > 0 && valueCount > 0) {
+                    if(keyCount > 0 && valueCount > 0) {
                         System.out.println(
                             keyCount + " <" + input + "> occurrence/s at key and " 
                             + valueCount + " <" + input + "> occurrence/s at value "
                             + "of [" + i + "," + j + "]"
                         );
-                    } else if (keyCount > 0) {
+                    } else if(keyCount > 0) {
                         System.out.println(
                             keyCount + " <" + input + "> occurrence/s at key "
                             + "of [" + i + "," + j + "]"
                         );
-                    } else if (valueCount > 0) {
+                    } else if(valueCount > 0) {
                         System.out.println(
                             valueCount + " <" + input + "> occurrence/s at value "
                             + "of [" + i + "," + j + "]"
@@ -152,7 +152,7 @@ public class AsciiTable {
             }
         }
 
-        if (!foundAny) {
+        if(!foundAny) {
             System.out.println("No occurrences found for \"" + input + "\". \n"); // No occurrences found for "<input>"
         } else {
             System.out.println();
@@ -162,7 +162,7 @@ public class AsciiTable {
 
     // Edit the key/value/both of a cell
     public void edit(Scanner sc) {
-        if (table.isEmpty()) {
+        if(table.isEmpty()) {
             System.out.println("Table is empty. Please load or generate a table first.\n");
             return;
         }
@@ -171,23 +171,23 @@ public class AsciiTable {
         boolean validIndex = false;
 
         // Get valid cell index from user
-        while (!validIndex) {
+        while(!validIndex) {
             System.out.print("Enter cell index to edit (rowxcol, ex. 0x0): ");
             String input = sc.next();
 
-            if (input.contains("x")) {
+            if(input.contains("x")) {
                 String[] parts = input.split("x");
-                if (parts.length == 2) {
+                if(parts.length == 2) {
                     try {
                         row = Integer.parseInt(parts[0]);
                         col = Integer.parseInt(parts[1]);
 
-                        if (row >= 0 && row < table.size() && col >= 0 && col < table.get(row).size()) {
+                        if(row >= 0 && row < table.size() && col >= 0 && col < table.get(row).size()) {
                             validIndex = true;
                         } else {
                             System.out.println("Index out of table bounds. Try again.");
                         }
-                    } catch (NumberFormatException e) {
+                    } catch(NumberFormatException e) {
                         System.out.println("Both row and column must be numbers.");
                     }
                 } else {
@@ -206,10 +206,10 @@ public class AsciiTable {
 
         // Ask what to edit: key, value, or both
         String choice = "";
-        while (!choice.equals("key") && !choice.equals("value") && !choice.equals("both")) {
+        while(!choice.equals("key") && !choice.equals("value") && !choice.equals("both")) {
             System.out.print("Do you want to edit the key, value, or both? (key/value/both): ");
             choice = sc.nextLine().trim().toLowerCase();
-            if (!choice.equals("key") && !choice.equals("value") && !choice.equals("both")) {
+            if(!choice.equals("key") && !choice.equals("value") && !choice.equals("both")) {
                 System.out.println("Invalid choice. Enter 'key', 'value', or 'both'.");
             }
         }
@@ -218,18 +218,18 @@ public class AsciiTable {
         String newValue = oldValue;
 
         // Get new key/value based on choice
-        if (choice.equals("key") || choice.equals("both")) {
+        if(choice.equals("key") || choice.equals("both")) {
             System.out.print("Enter new key (leave blank to keep '" + oldKey + "'): ");
             String inputKey = sc.nextLine().trim();
-            if (!inputKey.isEmpty()) {
+            if(!inputKey.isEmpty()) {
                 newKey = inputKey;
             }
         }
 
-        if (choice.equals("value") || choice.equals("both")) {
+        if(choice.equals("value") || choice.equals("both")) {
             System.out.print("Enter new value (leave blank to keep '" + oldValue + "'): ");
             String inputValue = sc.nextLine().trim();
-            if (!inputValue.isEmpty()) {
+            if(!inputValue.isEmpty()) {
                 newValue = inputValue;
             }
         }
@@ -247,7 +247,7 @@ public class AsciiTable {
 
     // Add a new row to the table with random key-value pairs
     public void addRow(Scanner sc) {
-        if (table.isEmpty()) {
+        if(table.isEmpty()) {
             System.out.println("Table is empty. Please load or generate a table first.\n");
             return;
         }
@@ -256,16 +256,16 @@ public class AsciiTable {
         boolean validNumCells = false;
 
         // Get number of cells for the new row
-        while (!validNumCells) {
+        while(!validNumCells) {
             System.out.print("Enter the number of cells for the new row: ");
             try {
                 numCells = sc.nextInt();
-                if (numCells > 0) {
+                if(numCells > 0) {
                     validNumCells = true;
                 } else {
                     System.out.println("Number of cells must be greater than 0.");
                 }
-            } catch (Exception e) {
+            } catch(Exception e) {
                 System.out.println("Invalid input. Please enter a number.");
                 sc.next(); // clear invalid input
             }
@@ -275,16 +275,16 @@ public class AsciiTable {
         boolean validRow = false;
 
         // Get the row number after which to insert the new row
-        while (!validRow) {
+        while(!validRow) {
             System.out.print("Insert the new row after which row? (0 to " + table.size() + ", 0 = before first row): ");
             try {
                 insertRow = sc.nextInt();
-                if (insertRow >= 0 && insertRow <= table.size()) {
+                if(insertRow >= 0 && insertRow <= table.size()) {
                     validRow = true;
                 } else {
                     System.out.println("Row number out of range.");
                 }
-            } catch (Exception e) {
+            } catch(Exception e) {
                 System.out.println("Invalid input. Please enter a number.");
                 sc.next(); // clear invalid input
             }
@@ -295,7 +295,7 @@ public class AsciiTable {
 
         // Insert new row at specified position
         int insertIndex;
-        if (insertRow == 0) {
+        if(insertRow == 0) {
             insertIndex = 0;
         } else {
             insertIndex = insertRow;
@@ -309,7 +309,7 @@ public class AsciiTable {
 
     // Sort by unicode value a specific row based on user input
     public void sortRow(Scanner sc) {
-        if (table.isEmpty()) {
+        if(table.isEmpty()) {
             System.out.println("No data to sort. Please load or generate a table first.\n");
             return;
         }
@@ -319,29 +319,29 @@ public class AsciiTable {
 
         // Ask for row number
         boolean validRow = false;
-        while (!validRow) {
+        while(!validRow) {
             System.out.print("Enter the row number to sort (1-" + table.size() + "): ");
             String input = sc.next();
 
             try {
                 rowIndex = Integer.parseInt(input) - 1; // user inputs 1-based index
-                if (rowIndex >= 0 && rowIndex < table.size()) {
+                if(rowIndex >= 0 && rowIndex < table.size()) {
                     validRow = true;
                 } else {
                     System.out.println("Row number out of range. Try again.");
                 }
-            } catch (NumberFormatException e) {
+            } catch(NumberFormatException e) {
                 System.out.println("Invalid input. Please enter a numeric value.");
             }
         }
 
         // Ask for sort order
         boolean validOrder = false;
-        while (!validOrder) {
+        while(!validOrder) {
             System.out.print("Sort order <asc/desc>: ");
             order = sc.next().toLowerCase();
 
-            if (order.equals("asc") || order.equals("desc")) {
+            if(order.equals("asc") || order.equals("desc")) {
                 validOrder = true;
             } else {
                 System.out.println("Invalid order. Please enter only 'asc' or 'desc'.");
@@ -371,7 +371,7 @@ public class AsciiTable {
 
     // Reset table with new dimensions and new key-value pairs
     public void resetTable(Scanner sc) {
-        if (fileName == null) {
+        if(fileName == null) {
             System.out.println("No file associated with this table.");
             return;
         }
@@ -382,7 +382,7 @@ public class AsciiTable {
 
         table.clear();
 
-        for (int i = 0; i < rows; i++) {
+        for(int i = 0; i < rows; i++) {
             table.add(generateRandomKeyPair(cols));
         }
 
@@ -392,14 +392,14 @@ public class AsciiTable {
 	
 	// Print the table 
     public void printTable() {
-        if (table.isEmpty()) {
+        if(table.isEmpty()) {
             System.out.println("Table is empty or not loaded.\n");
             return;
         }
 
         System.out.println("Table Contents:");
-        for (ArrayList<Pair> row : table) {
-            for (Pair p : row) {
+        for(ArrayList<Pair> row : table) {
+            for(Pair p : row) {
                 System.out.print(p.toString() + " ");
             }
             System.out.println();
