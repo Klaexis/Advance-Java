@@ -37,7 +37,7 @@ public class AsciiFileHandler {
     }
 
     // Check for existing file or create a new one
-    public static String checkOrCreateFile(Scanner sc, String[] args) {
+    public String checkOrCreateFile(Scanner sc, String[] args) {
         String fileName = null;
         boolean fileLoaded = false;
 

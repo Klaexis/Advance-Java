@@ -1,2 +1,2 @@
-javac controller/*.java model/*.java Main.java
+javac asciiproject/controller/*.java asciiproject/model/*.java asciiproject/Main.java
 java asciiproject.Main

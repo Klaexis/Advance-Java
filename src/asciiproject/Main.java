@@ -8,7 +8,7 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         
         AsciiFileHandler asciiFileHandler = new AsciiFileHandler();
-        String fileName = AsciiFileHandler.checkOrCreateFile(sc, args);
+        String fileName = asciiFileHandler.checkOrCreateFile(sc, args);
         AsciiTable asciiTable = new AsciiTable(asciiFileHandler, fileName);
 
         asciiFileHandler.setFileName(fileName);

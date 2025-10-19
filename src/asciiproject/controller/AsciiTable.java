@@ -23,6 +23,11 @@ public class AsciiTable {
         return table;
     }
 
+    private void saveTable() {
+        fileHandler.setFileName(fileName);
+        fileHandler.saveToFile(table);
+    }
+
 	//Generate a random 3 character ASCII String
 	private static String generateRandomAscii() {
 		Random random = new Random();
@@ -237,8 +242,7 @@ public class AsciiTable {
         System.out.println("Old value -> (" + oldKey + " " + oldValue + ")");
         System.out.println("New value -> (" + newKey + " " + newValue + ")\n");
 
-        fileHandler.setFileName(fileName);
-        fileHandler.saveToFile(table);
+        saveTable();
     }
 
     // Add a new row to the table with random key-value pairs
@@ -299,8 +303,7 @@ public class AsciiTable {
         table.add(insertIndex, newRow);
 
         System.out.println("\nNew row added successfully!\n");
-        fileHandler.setFileName(fileName);
-        fileHandler.saveToFile(table);
+        saveTable();
         printTable();
     }
 
@@ -351,17 +354,10 @@ public class AsciiTable {
         final String sortOrder = order;
 
         // Sort the selected row
-        Comparator<Pair> comparator = new Comparator<Pair>() {
-            @Override
-            public int compare(Pair p1, Pair p2) {
-                String concat1 = p1.getKey() + p1.getValue();
-                String concat2 = p2.getKey() + p2.getValue();
-                if (sortOrder.equals("asc")) {
-                    return concat1.compareTo(concat2);
-                } else {
-                    return concat2.compareTo(concat1);
-                }
-            }
+        Comparator<Pair> comparator = (p1, p2) -> {
+            String c1 = p1.getKey() + p1.getValue();
+            String c2 = p2.getKey() + p2.getValue();
+            return sortOrder.equals("asc") ? c1.compareTo(c2) : c2.compareTo(c1);
         };
 
         selectedRow.sort(comparator);
@@ -369,8 +365,7 @@ public class AsciiTable {
         System.out.println("\nRow " + (rowIndex + 1) + " sorted in " + order.toUpperCase() + " order.\n");
 
         // Save changes and print updated table
-        fileHandler.setFileName(fileName);
-        fileHandler.saveToFile(table);
+        saveTable();
         printTable();
     }
 
@@ -391,8 +386,7 @@ public class AsciiTable {
             table.add(generateRandomKeyPair(cols));
         }
 
-        fileHandler.setFileName(fileName);
-        fileHandler.saveToFile(table);
+        saveTable();
         printTable();
     }
 	
