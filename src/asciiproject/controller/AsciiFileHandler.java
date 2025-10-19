@@ -37,7 +37,7 @@ public class AsciiFileHandler {
     }
     
     // Generate new table and save to file
-    public static void generateAndSave(String fileName, int rows, int cols) {
+    public static void generateTableAndSave(String fileName, int rows, int cols) {
         File file = getFilePath(fileName);
 
         try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
@@ -105,7 +105,7 @@ public class AsciiFileHandler {
             int row = tableDimensions[0];
             int col = tableDimensions[1];
 
-            generateAndSave(fileName, row, col);
+            generateTableAndSave(fileName, row, col);
             fileLoaded = true;
         }
 
@@ -125,6 +125,13 @@ public class AsciiFileHandler {
             return false;
         }
 
+        // Regex pattern to match key-value pairs in the format: (key value)
+        //  \(          match literal '('
+        //  ([^\\s]+)   capture the key (any non-space characters)
+        //  \\s         match a space between key and value
+        //  (.*?)       capture the value (non-greedy, allows ')' inside value)
+        //  \\)         match literal ')'
+        //  (?=\\s|$)   ensure ')' is followed by a space or end of line (end of pair)
         Pattern pattern = Pattern.compile("\\(([^\\s]+)\\s(.*?)\\)(?=\\s|$)");
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
