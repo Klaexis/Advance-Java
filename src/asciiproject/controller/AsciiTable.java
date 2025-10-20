@@ -82,7 +82,7 @@ public class AsciiTable {
 
         while(!validInput) {
             System.out.print("Enter the dimension of the table. Please use the format rowxcol (ex. 3x3): ");
-            String input = sc.next();
+            String input = sc.nextLine().trim();
 
 			// Check if input matches pattern like 1x1 or 3x3
 			int[] parsed = parseRowColInput(input);
@@ -122,7 +122,17 @@ public class AsciiTable {
         }
 
         System.out.print("Enter character/s you want to search: ");
-        String input = sc.next();
+        String input = sc.nextLine().trim();
+
+        if (input.contains(" ")) {
+            System.out.println("Invalid input. Input should not contain spaces.\n");
+            return;
+        }
+
+        if (input.isEmpty()) {
+            System.out.println("Invalid input. Please enter at least one character.\n");
+            return;
+        }
 
         boolean foundAny = false;
 
@@ -167,7 +177,6 @@ public class AsciiTable {
         } else {
             System.out.println();
         }
-
     }
 
     // Edit the key/value/both of a cell
@@ -192,7 +201,7 @@ public class AsciiTable {
             if (row >= 0 && col >= 0 && row < table.size() && col < table.get(row).size()) {
                 validIndex = true;
             } else {
-                System.out.println("Invalid format or index out of bounds. Use rowxcol (e.g., 0x0).");
+                System.out.println("Invalid format or index out of bounds. Use rowxcol (e.g., 0x0).\n");
             }
         }
 
@@ -220,7 +229,7 @@ public class AsciiTable {
             System.out.print("Enter new key (leave blank to keep '" + oldKey + "'): ");
             String inputKey = sc.nextLine().trim();
             if(!inputKey.isEmpty()) {
-                newKey = inputKey;
+                newKey = inputKey.split(" ")[0]; // Only take first word as key
             }
         }
 
@@ -228,7 +237,7 @@ public class AsciiTable {
             System.out.print("Enter new value (leave blank to keep '" + oldValue + "'): ");
             String inputValue = sc.nextLine().trim();
             if(!inputValue.isEmpty()) {
-                newValue = inputValue;
+                newValue = inputValue.split(" ")[0]; // Only take first word as value
             }
         }
 
@@ -297,6 +306,7 @@ public class AsciiTable {
         System.out.println("\nNew row added successfully!\n");
         saveTable();
         printTable();
+        sc.nextLine(); // Clear newline
     }
 
     // Sort by unicode value a specific row based on user input
@@ -313,7 +323,7 @@ public class AsciiTable {
         boolean validRow = false;
         while(!validRow) {
             System.out.print("Enter the row number to sort (1-" + table.size() + "): ");
-            String input = sc.next();
+            String input = sc.nextLine().trim();
 
             try {
                 rowIndex = Integer.parseInt(input) - 1; // user inputs 1-based index
@@ -331,7 +341,7 @@ public class AsciiTable {
         boolean validOrder = false;
         while(!validOrder) {
             System.out.print("Sort order <asc/desc>: ");
-            order = sc.next().toLowerCase();
+            order = sc.nextLine().trim().toLowerCase();
 
             if(order.equals("asc") || order.equals("desc")) {
                 validOrder = true;

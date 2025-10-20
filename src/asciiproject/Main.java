@@ -28,7 +28,7 @@ public class Main {
                              "[ x ] - Exit\n" +
                              "Enter the function you want to do: ");
 
-            String choice = sc.next().toLowerCase();
+            String choice = sc.nextLine().trim().toLowerCase();
             System.out.println();
 
             switch(choice) {
