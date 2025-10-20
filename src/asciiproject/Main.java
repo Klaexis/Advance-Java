@@ -9,10 +9,12 @@ public class Main {
         
         AsciiFileHandler asciiFileHandler = new AsciiFileHandler();
         String fileName = asciiFileHandler.checkOrCreateFile(sc, args);
+
         AsciiTable asciiTable = new AsciiTable(asciiFileHandler, fileName);
 
         asciiFileHandler.setFileName(fileName);
         asciiFileHandler.loadFromFile(fileName, asciiTable.getTable());
+        
         asciiTable.printTable();
 
         boolean isRunning = true;

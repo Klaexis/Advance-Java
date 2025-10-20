@@ -138,6 +138,7 @@ public class AsciiFileHandler {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) { // Close BufferedReader and FileReader after block ends
             String line;
             table.clear();
+
             while((line = reader.readLine()) != null) {
                 Matcher matcher = pattern.matcher(line);
                 ArrayList<Pair> row = new ArrayList<>();
@@ -146,6 +147,7 @@ public class AsciiFileHandler {
                 }
                 table.add(row);
             }
+
             System.out.println("\nFile loaded successfully from " + file.getPath() + "\n");
             return true;
         } catch(IOException e) {
