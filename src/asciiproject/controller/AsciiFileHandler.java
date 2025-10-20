@@ -3,7 +3,6 @@ package asciiproject.controller;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -40,7 +39,8 @@ public class AsciiFileHandler {
     public static void generateTableAndSave(String fileName, int rows, int cols) {
         File file = getFilePath(fileName);
 
-        try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
+        // Write table data to file
+        try (PrintWriter writer = new PrintWriter(file)) { // Close PrintWriter after block ends
             for(int i = 0; i < rows; i++) {
                 ArrayList<Pair> row = AsciiTable.generateRandomKeyPair(cols);
                 for(Pair p : row) {
@@ -134,7 +134,8 @@ public class AsciiFileHandler {
         //  (?=\\s|$)   ensure ')' is followed by a space or end of line (end of pair)
         Pattern pattern = Pattern.compile("\\(([^\\s]+)\\s(.*?)\\)(?=\\s|$)");
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        // Wrap FileReader in BufferedReader for faster reading
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) { // Close BufferedReader and FileReader after block ends
             String line;
             table.clear();
             while((line = reader.readLine()) != null) {
@@ -162,7 +163,8 @@ public class AsciiFileHandler {
 
         File file = getFilePath(fileName);
 
-        try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
+        // Write table data to file
+        try (PrintWriter writer = new PrintWriter(file)) { // Close PrintWriter after block ends
             for(ArrayList<Pair> row : table) {
                 for(Pair p : row) {
                     writer.print(p.toString() + " ");
