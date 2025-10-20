@@ -52,6 +52,29 @@ public class AsciiTable {
         return keyPair;
     }
 
+    // Helper method to parse user input in the format rowxcol
+    private static int[] parseRowColInput(String input) {
+        int[] result = {-1, -1};
+
+        if (input.contains("x")) {
+            String[] parts = input.split("x");
+            if (parts.length == 2) {
+                try {
+                    int row = Integer.parseInt(parts[0]);
+                    int col = Integer.parseInt(parts[1]);
+                    result[0] = row;
+                    result[1] = col;
+                } catch (NumberFormatException e) {
+                    System.out.println("Both row and column must be valid numbers.");
+                }
+            }
+        } else {
+            System.out.println("Invalid format. Please use the format rowxcol (ex. 1x1, 3x3) with lowercase 'x'.");
+        }
+
+        return result; 
+    }
+
     // Get table dimensions from user
     public static int[] getTableDimensions(Scanner sc) {
         int[] dimensions = new int[2];
@@ -62,30 +85,17 @@ public class AsciiTable {
             String input = sc.next();
 
 			// Check if input matches pattern like 1x1 or 3x3
-			if(input.contains("x")) {
-				String[] parts = input.split("x");
+			int[] parsed = parseRowColInput(input);
+            int row = parsed[0];
+            int col = parsed[1];
 
-				if(parts.length == 2) {
-					try {
-						int row = Integer.parseInt(parts[0]);
-						int col = Integer.parseInt(parts[1]);
-
-						if(row > 0 && col > 0) {
-                            dimensions[0] = row;
-                            dimensions[1] = col;
-                            validInput = true;
-						} else {
-							System.out.println("Rows and columns must be greater than 0.");
-						}
-					} catch(NumberFormatException e) {
-						System.out.println("Both row and column must be valid numbers.");
-					}
-				} else {
-					System.out.println("Invalid format. Please use the format rowxcol (ex. 1x1, 3x3) with lowercase 'x'.");
-				}
-			} else {
-				System.out.println("Invalid format. Please use the format rowxcol (ex. 1x1, 3x3) with lowercase 'x'.");
-			}
+            if (row > 0 && col > 0) {
+                dimensions[0] = row;
+                dimensions[1] = col;
+                validInput = true;
+            } else {
+                System.out.println("Row and column must be greater than 0.");
+            }
         }
         System.out.println();
 
@@ -175,34 +185,22 @@ public class AsciiTable {
             System.out.print("Enter cell index to edit (rowxcol, ex. 0x0): ");
             String input = sc.next();
 
-            if(input.contains("x")) {
-                String[] parts = input.split("x");
-                if(parts.length == 2) {
-                    try {
-                        row = Integer.parseInt(parts[0]);
-                        col = Integer.parseInt(parts[1]);
+            int[] parsed = parseRowColInput(input);
+            row = parsed[0];
+            col = parsed[1];
 
-                        if(row >= 0 && row < table.size() && col >= 0 && col < table.get(row).size()) {
-                            validIndex = true;
-                        } else {
-                            System.out.println("Index out of table bounds. Try again.");
-                        }
-                    } catch(NumberFormatException e) {
-                        System.out.println("Both row and column must be numbers.");
-                    }
-                } else {
-                    System.out.println("Invalid format. Use rowxcol (e.g., 0x0).");
-                }
+            if (row >= 0 && col >= 0 && row < table.size() && col < table.get(row).size()) {
+                validIndex = true;
             } else {
-                System.out.println("Invalid format. Use rowxcol (e.g., 0x0).");
+                System.out.println("Invalid format or index out of bounds. Use rowxcol (e.g., 0x0).");
             }
         }
 
-        Pair cell = table.get(row).get(col);
+        Pair cell = table.get(row).get(col); // Get the cell
         String oldKey = cell.getKey();
         String oldValue = cell.getValue();
 
-        sc.nextLine(); // Consume leftover newline
+        sc.nextLine(); // Clear newline
 
         // Ask what to edit: key, value, or both
         String choice = "";
@@ -294,13 +292,7 @@ public class AsciiTable {
         ArrayList<Pair> newRow = generateRandomKeyPair(numCells);
 
         // Insert new row at specified position
-        int insertIndex;
-        if(insertRow == 0) {
-            insertIndex = 0;
-        } else {
-            insertIndex = insertRow;
-        }
-        table.add(insertIndex, newRow);
+        table.add(insertRow, newRow);
 
         System.out.println("\nNew row added successfully!\n");
         saveTable();
