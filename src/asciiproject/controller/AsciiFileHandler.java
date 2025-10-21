@@ -132,7 +132,7 @@ public class AsciiFileHandler {
         //  (.*?)       capture the value (non-greedy, allows ')' inside value)
         //  \\)         match literal ')'
         //  (?=\\s|$)   ensure ')' is followed by a space or end of line (end of pair)
-        Pattern pattern = Pattern.compile("\\(([^\\s]+)\\s(.*?)\\)(?=\\s|$)");
+        Pattern pattern = Pattern.compile("\\(([^\\s]+)\\s(.*?)\\)");
 
         // Wrap FileReader in BufferedReader for faster reading
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) { // Close BufferedReader and FileReader after block ends

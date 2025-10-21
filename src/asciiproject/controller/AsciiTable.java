@@ -193,16 +193,16 @@ public class AsciiTable {
 
     // Edit the key/value/both of a cell
     public void edit(Scanner sc) {
-        if(table.isEmpty()) {
+        if (table.isEmpty()) {
             System.out.println("Table is empty. Please load or generate a table first.\n");
             return;
         }
 
-        int row = 0, col = 0; 
+        int row = 0, col = 0;
         boolean validIndex = false;
 
         // Get valid cell index from user
-        while(!validIndex) {
+        while (!validIndex) {
             System.out.print("Enter cell index to edit (rowxcol, ex. 0x0): ");
             String input = sc.next();
 
@@ -225,10 +225,10 @@ public class AsciiTable {
 
         // Ask what to edit: key, value, or both
         String choice = "";
-        while(!choice.equals("key") && !choice.equals("value") && !choice.equals("both")) {
+        while (!choice.equals("key") && !choice.equals("value") && !choice.equals("both")) {
             System.out.print("Do you want to edit the key, value, or both? (key/value/both): ");
             choice = sc.nextLine().trim().toLowerCase();
-            if(!choice.equals("key") && !choice.equals("value") && !choice.equals("both")) {
+            if (!choice.equals("key") && !choice.equals("value") && !choice.equals("both")) {
                 System.out.println("Invalid choice. Enter 'key', 'value', or 'both'.");
             }
         }
@@ -237,14 +237,14 @@ public class AsciiTable {
         String newValue = oldValue;
 
         // Get new key/value based on choice
-        if(choice.equals("key") || choice.equals("both")) {
+        if (choice.equals("key") || choice.equals("both")) {
             boolean validKey = false;
-            while(!validKey) {
+            while (!validKey) {
                 System.out.print("Enter new key (leave blank to keep '" + oldKey + "'): ");
                 String inputKey = sc.nextLine().trim();
-                if(!inputKey.isEmpty()) {
+                if (!inputKey.isEmpty()) {
                     if (isKeyUnique(inputKey)) {
-                        newKey = inputKey.split(" ")[0]; 
+                        newKey = inputKey; 
                         validKey = true;
                     } else {
                         System.out.println("Key already exists. Please enter a unique key.");
@@ -255,11 +255,11 @@ public class AsciiTable {
             }
         }
 
-        if(choice.equals("value") || choice.equals("both")) {
+        if (choice.equals("value") || choice.equals("both")) {
             System.out.print("Enter new value (leave blank to keep '" + oldValue + "'): ");
             String inputValue = sc.nextLine().trim();
-            if(!inputValue.isEmpty()) {
-                newValue = inputValue.split(" ")[0]; 
+            if (!inputValue.isEmpty()) {
+                newValue = inputValue; 
             }
         }
 
@@ -268,11 +268,12 @@ public class AsciiTable {
         cell.setValue(newValue);
 
         System.out.println("\nCell updated:");
-        System.out.println("Old value -> (" + oldKey + " " + oldValue + ")");
-        System.out.println("New value -> (" + newKey + " " + newValue + ")\n");
+        System.out.println("Old value -> (" + oldKey + " , " + oldValue + ")");
+        System.out.println("New value -> (" + newKey + " , " + newValue + ")\n");
 
         saveTable();
     }
+
 
     // Add a new row to the table with random key-value pairs
     public void addRow(Scanner sc) {
