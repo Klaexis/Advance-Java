@@ -101,16 +101,19 @@ public class AsciiFileHandler {
                 fileName += ".txt";
             }
 
-            int[] tableDimensions = AsciiTable.getTableDimensions(sc);
-            int row = tableDimensions[0];
-            int col = tableDimensions[1];
+            File file = getFilePath(fileName);
 
-            generateTableAndSave(fileName, row, col);
-            fileLoaded = true;
-        }
+            if(file.exists()) {
+                System.out.println("File already exists. Loading existing file instead.");
+                fileLoaded = true;
+            } else {
+                int[] tableDimensions = AsciiTable.getTableDimensions(sc);
+                int row = tableDimensions[0];
+                int col = tableDimensions[1];
 
-        if(!fileLoaded) {
-            System.out.println("Failed to load file.");
+                generateTableAndSave(fileName, row, col);
+                fileLoaded = true;
+            }
         }
 
         System.out.println();
@@ -126,11 +129,13 @@ public class AsciiFileHandler {
         }
 
         // Regex pattern to match key-value pairs in the format: (key , value)
-        //  \(              match literal '('
-        //  ([^)]*?)        capture the key — any characters except ')' (non-greedy)
-        //  \s,\s           match a comma surrounded by optional spaces
-        //  ([^)]*?)        capture the value — any characters except ')' (non-greedy)
-        //  \)              match literal ')'
+        //  \(             match literal '('
+        //  (.*?)          capture the key — any characters (non-greedy)
+        //  \s,\s          match a comma with one space on each side
+        //  (.*?)          capture the value — any characters (non-greedy)
+        //  \)             match literal ')'
+        //  \s*            match optional whitespace after ')'
+        //  (?=\(|$)       ensure the match is followed by '(' or end of string
        Pattern pattern = Pattern.compile("\\((.*?)\\s,\\s(.*?)\\)\\s*(?=\\(|$)");
 
         // Wrap FileReader in BufferedReader for faster reading
