@@ -125,14 +125,13 @@ public class AsciiFileHandler {
             return false;
         }
 
-        // Regex pattern to match key-value pairs in the format: (key value)
-        //  \(          match literal '('
-        //  ([^\\s]+)   capture the key (any non-space characters)
-        //  \\s         match a space between key and value
-        //  (.*?)       capture the value (non-greedy, allows ')' inside value)
-        //  \\)         match literal ')'
-        //  (?=\\s|$)   ensure ')' is followed by a space or end of line (end of pair)
-        Pattern pattern = Pattern.compile("\\(([^\\s]+)\\s(.*?)\\)");
+        // Regex pattern to match key-value pairs in the format: (key , value)
+        //  \(              match literal '('
+        //  ([^)]*?)        capture the key — any characters except ')' (non-greedy)
+        //  \s,\s           match a comma surrounded by optional spaces
+        //  ([^)]*?)        capture the value — any characters except ')' (non-greedy)
+        //  \)              match literal ')'
+        Pattern pattern = Pattern.compile("\\(([^)]*?)\\s,\\s([^)]*?)\\)");
 
         // Wrap FileReader in BufferedReader for faster reading
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) { // Close BufferedReader and FileReader after block ends
