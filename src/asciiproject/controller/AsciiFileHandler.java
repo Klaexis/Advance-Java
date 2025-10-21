@@ -131,7 +131,7 @@ public class AsciiFileHandler {
         //  \s,\s           match a comma surrounded by optional spaces
         //  ([^)]*?)        capture the value — any characters except ')' (non-greedy)
         //  \)              match literal ')'
-        Pattern pattern = Pattern.compile("\\(([^)]*?)\\s,\\s([^)]*?)\\)");
+       Pattern pattern = Pattern.compile("\\((.*?)\\s,\\s(.*?)\\)\\s*(?=\\(|$)");
 
         // Wrap FileReader in BufferedReader for faster reading
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) { // Close BufferedReader and FileReader after block ends
@@ -139,6 +139,7 @@ public class AsciiFileHandler {
             table.clear();
 
             while((line = reader.readLine()) != null) {
+                line = line.trim();
                 Matcher matcher = pattern.matcher(line);
                 ArrayList<Pair> row = new ArrayList<>();
                 while(matcher.find()) {
