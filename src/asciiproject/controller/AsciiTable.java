@@ -114,6 +114,18 @@ public class AsciiTable {
         return count;
     }
 
+    // Check if the key already exists in the table
+    private boolean isKeyUnique(String key) {
+        for (ArrayList<Pair> row : table) {
+            for (Pair pair : row) {
+                if (pair.getKey().equals(key)) {
+                    return false; // Key already exists
+                }
+            }
+        }
+        return true; 
+    }
+
     // Search for character/s in both key and value of each cell
     public void search(Scanner sc) {
         if(table.isEmpty()) {
@@ -226,10 +238,20 @@ public class AsciiTable {
 
         // Get new key/value based on choice
         if(choice.equals("key") || choice.equals("both")) {
-            System.out.print("Enter new key (leave blank to keep '" + oldKey + "'): ");
-            String inputKey = sc.nextLine().trim();
-            if(!inputKey.isEmpty()) {
-                newKey = inputKey.split(" ")[0]; // Only take first word as key
+            boolean validKey = false;
+            while(!validKey) {
+                System.out.print("Enter new key (leave blank to keep '" + oldKey + "'): ");
+                String inputKey = sc.nextLine().trim();
+                if(!inputKey.isEmpty()) {
+                    if (isKeyUnique(inputKey)) {
+                        newKey = inputKey.split(" ")[0]; 
+                        validKey = true;
+                    } else {
+                        System.out.println("Key already exists. Please enter a unique key.");
+                    }
+                } else {
+                    validKey = true; // Keep old key if input is blank
+                }
             }
         }
 
@@ -237,7 +259,7 @@ public class AsciiTable {
             System.out.print("Enter new value (leave blank to keep '" + oldValue + "'): ");
             String inputValue = sc.nextLine().trim();
             if(!inputValue.isEmpty()) {
-                newValue = inputValue.split(" ")[0]; // Only take first word as value
+                newValue = inputValue.split(" ")[0]; 
             }
         }
 
