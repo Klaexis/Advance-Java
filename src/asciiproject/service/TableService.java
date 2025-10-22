@@ -56,9 +56,9 @@ public class TableService {
     private static int[] parseRowColInput(String input) {
         int[] result = {-1, -1};
 
-        if (input.contains("x")) {
+        if(input.contains("x")) {
             String[] parts = input.split("x");
-            if (parts.length == 2) {
+            if(parts.length == 2) {
                 try {
                     int row = Integer.parseInt(parts[0]);
                     int col = Integer.parseInt(parts[1]);
@@ -89,7 +89,7 @@ public class TableService {
             int row = parsed[0];
             int col = parsed[1];
 
-            if (row > 0 && col > 0) {
+            if(row > 0 && col > 0) {
                 dimensions[0] = row;
                 dimensions[1] = col;
                 validInput = true;
@@ -116,9 +116,9 @@ public class TableService {
 
     // Check if the key already exists in the table
     private boolean isKeyUnique(String key) {
-        for (Row row : table) {
-            for (Pair pair : row.getCells()) {
-                if (pair.getKey().equals(key)) {
+        for(Row row : table) {
+            for(Pair pair : row.getCells()) {
+                if(pair.getKey().equals(key)) {
                     return false;
                 }
             }
@@ -136,12 +136,12 @@ public class TableService {
         System.out.print("Enter character/s you want to search: ");
         String input = sc.nextLine().trim();
 
-        if (input.contains(" ")) {
+        if(input.contains(" ")) {
             System.out.println("Invalid input. Input should not contain spaces.\n");
             return;
         }
 
-        if (input.isEmpty()) {
+        if(input.isEmpty()) {
             System.out.println("Invalid input. Please enter at least one character.\n");
             return;
         }
@@ -194,7 +194,7 @@ public class TableService {
 
     // Edit the key/value/both of a cell
     public void edit(Scanner sc) {
-        if (table.isEmpty()) {
+        if(table.isEmpty()) {
             System.out.println("Table is empty. Please load or generate a table first.\n");
             return;
         }
@@ -203,7 +203,7 @@ public class TableService {
         boolean validIndex = false;
 
         // Get valid cell index from user
-        while (!validIndex) {
+        while(!validIndex) {
             System.out.print("Enter cell index to edit (rowxcol, ex. 0x0): ");
             String input = sc.next();
 
@@ -211,7 +211,7 @@ public class TableService {
             row = parsed[0];
             col = parsed[1];
 
-            if (row >= 0 && col >= 0 && row < table.size() && col < table.get(row).getCells().size()) {
+            if(row >= 0 && col >= 0 && row < table.size() && col < table.get(row).getCells().size()) {
                 validIndex = true;
             } else {
                 System.out.println("Invalid format or index out of bounds. Use rowxcol (e.g., 0x0).\n");
@@ -226,10 +226,10 @@ public class TableService {
 
         // Ask what to edit: key, value, or both
         String choice = "";
-        while (!choice.equals("key") && !choice.equals("value") && !choice.equals("both")) {
+        while(!choice.equals("key") && !choice.equals("value") && !choice.equals("both")) {
             System.out.print("Do you want to edit the key, value, or both? (key/value/both): ");
             choice = sc.nextLine().trim().toLowerCase();
-            if (!choice.equals("key") && !choice.equals("value") && !choice.equals("both")) {
+            if(!choice.equals("key") && !choice.equals("value") && !choice.equals("both")) {
                 System.out.println("Invalid choice. Enter 'key', 'value', or 'both'.");
             }
         }
@@ -238,13 +238,13 @@ public class TableService {
         String newValue = oldValue;
 
         // Get new key/value based on choice
-        if (choice.equals("key") || choice.equals("both")) {
+        if(choice.equals("key") || choice.equals("both")) {
             boolean validKey = false;
-            while (!validKey) {
+            while(!validKey) {
                 System.out.print("Enter new key (leave blank to keep '" + oldKey + "'): ");
                 String inputKey = sc.nextLine().trim();
-                if (!inputKey.isEmpty()) {
-                    if (isKeyUnique(inputKey)) {
+                if(!inputKey.isEmpty()) {
+                    if(isKeyUnique(inputKey)) {
                         newKey = inputKey; 
                         validKey = true;
                     } else {
@@ -256,10 +256,10 @@ public class TableService {
             }
         }
 
-        if (choice.equals("value") || choice.equals("both")) {
+        if(choice.equals("value") || choice.equals("both")) {
             System.out.print("Enter new value (leave blank to keep '" + oldValue + "'): ");
             String inputValue = sc.nextLine().trim();
-            if (!inputValue.isEmpty()) {
+            if(!inputValue.isEmpty()) {
                 newValue = inputValue; 
             }
         }
@@ -425,7 +425,7 @@ public class TableService {
         }
 
         System.out.println("Table Contents:");
-        for (Row row : table) {
+        for(Row row : table) {
             System.out.println(row.toString());
         }
         System.out.println();

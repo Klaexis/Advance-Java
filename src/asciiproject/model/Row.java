@@ -21,7 +21,7 @@ public class Row {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (Pair p : cells) {
+        for(Pair p : cells) {
             sb.append(p.toString()).append(" ");
         }
         return sb.toString().trim();

@@ -135,11 +135,11 @@ public class FileHandler {
        Pattern pattern = Pattern.compile("\\((.*?)\\s,\\s(.*?)\\)\\s*(?=\\(|$)");
 
         // Wrap FileReader in BufferedReader for faster reading
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) { // Close BufferedReader and FileReader after block ends
+        try(BufferedReader reader = new BufferedReader(new FileReader(file))) { // Close BufferedReader and FileReader after block ends
             String line;
             table.clear();
 
-            while ((line = reader.readLine()) != null) {
+            while((line = reader.readLine()) != null) {
                 line = line.trim();
                 Matcher matcher = pattern.matcher(line);
                 List<Pair> cells = new ArrayList<>();
@@ -170,7 +170,7 @@ public class FileHandler {
 
         // Write table data to file
         try (PrintWriter writer = new PrintWriter(file)) { // Close PrintWriter after block ends
-             for (Row row : table) {
+            for(Row row : table) {
                 writer.println(row.toString());
             }
             System.out.println("Table saved to " + file.getPath() + "\n");
