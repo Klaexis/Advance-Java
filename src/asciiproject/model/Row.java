@@ -22,8 +22,10 @@ public class Row {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for(Pair p : cells) {
-            sb.append(p.toString()).append(" ");
+            // Append the string of the Pair followed by a space
+            sb.append(p.toString()).append(" "); // format as (key1 , value1) (key2 , value2) and so on
         }
-        return sb.toString().trim();
+        // Convert the StringBuilder to a String 
+        return sb.toString();
     }
 }
