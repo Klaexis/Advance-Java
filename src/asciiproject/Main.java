@@ -1,21 +1,21 @@
 package asciiproject;
 
 import java.util.Scanner;
-import asciiproject.controller.*;
-
+import asciiproject.util.FileHandler;
+import asciiproject.service.TableService;
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         
-        AsciiFileHandler asciiFileHandler = new AsciiFileHandler();
-        String fileName = asciiFileHandler.checkOrCreateFile(sc, args);
+        FileHandler fileHandler = new FileHandler();
+        String fileName = fileHandler.checkOrCreateFile(sc, args);
 
-        AsciiTable asciiTable = new AsciiTable(asciiFileHandler, fileName);
+        TableService tableService = new TableService(fileHandler, fileName);
 
-        asciiFileHandler.setFileName(fileName);
-        asciiFileHandler.loadFromFile(fileName, asciiTable.getTable());
+        fileHandler.setFileName(fileName);
+        fileHandler.loadFromFile(fileName, tableService.getTable());
         
-        asciiTable.printTable();
+        tableService.printTable();
 
         boolean isRunning = true;
         while(isRunning) {
@@ -34,32 +34,32 @@ public class Main {
             switch(choice) {
                 case "search":
                     System.out.println("Searching...");
-                    asciiTable.search(sc);
+                    tableService.search(sc);
                     break;
 
                 case "edit":
                     System.out.println("Editing...");
-                    asciiTable.edit(sc);
+                    tableService.edit(sc);
                     break;
 
                 case "add_row":
                     System.out.println("Adding Row...");
-                    asciiTable.addRow(sc);
+                    tableService.addRow(sc);
                     break;
 
                 case "sort":
                     System.out.println("Sorting...");
-                    asciiTable.sortRow(sc);
+                    tableService.sortRow(sc);
                     break;
 
                 case "print":
                     System.out.println("Printing...");
-                    asciiTable.printTable();
+                    tableService.printTable();
                     break;
 
                 case "reset":
                     System.out.println("Resetting...");
-                    asciiTable.resetTable(sc);
+                    tableService.resetTable(sc);
                     break;
 
                 case "x":

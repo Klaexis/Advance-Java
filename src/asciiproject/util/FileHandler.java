@@ -1,4 +1,4 @@
-package asciiproject.controller;
+package asciiproject.util;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,8 +10,9 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import asciiproject.model.Pair;
+import asciiproject.service.TableService;
 
-public class AsciiFileHandler {
+public class FileHandler {
     private String fileName;
     private static final String FOLDER_NAME = "text files"; // Folder for all .txt files
 
@@ -42,7 +43,7 @@ public class AsciiFileHandler {
         // Write table data to file
         try (PrintWriter writer = new PrintWriter(file)) { // Close PrintWriter after block ends
             for(int i = 0; i < rows; i++) {
-                ArrayList<Pair> row = AsciiTable.generateRandomKeyPair(cols);
+                ArrayList<Pair> row = TableService.generateRandomKeyPair(cols);
                 for(Pair p : row) {
                     writer.print(p.toString() + " ");
                 }
@@ -107,7 +108,7 @@ public class AsciiFileHandler {
                 System.out.println("File already exists. Loading existing file instead.");
                 fileLoaded = true;
             } else {
-                int[] tableDimensions = AsciiTable.getTableDimensions(sc);
+                int[] tableDimensions = TableService.getTableDimensions(sc);
                 int row = tableDimensions[0];
                 int col = tableDimensions[1];
 

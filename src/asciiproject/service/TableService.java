@@ -1,18 +1,19 @@
-package asciiproject.controller;
+package asciiproject.service;
 
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Random;
 import asciiproject.model.Pair;
+import asciiproject.util.FileHandler;
 
-public class AsciiTable {
+public class TableService {
 	private ArrayList<ArrayList<Pair>> table;
-    private AsciiFileHandler fileHandler;
+    private FileHandler fileHandler;
     private String fileName;
 	
     // Initialize the ArrayList
-    public AsciiTable(AsciiFileHandler fileHandler, String fileName) {
+    public TableService(FileHandler fileHandler, String fileName) {
         this.table = new ArrayList<>();
         this.fileHandler = fileHandler;
         this.fileName = fileName;
