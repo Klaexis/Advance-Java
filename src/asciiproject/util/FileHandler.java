@@ -6,10 +6,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import asciiproject.model.Pair;
+import asciiproject.model.Row;
 import asciiproject.service.TableService;
 
 public class FileHandler {
@@ -74,7 +76,7 @@ public class FileHandler {
 
             // Ask user if not found
             while(!file.exists()) {
-                System.out.print("File not found. Please enter a valid filename: ");
+                System.out.print("File not found. Please enter a valid filename (Enter blank to create a new one): ");
                 fileName = sc.nextLine().trim();
 
                 if(!fileName.endsWith(".txt") && !fileName.isEmpty()) {
@@ -115,7 +117,7 @@ public class FileHandler {
     }
 
     // Load table from file 
-    public static boolean loadFromFile(String fileName, ArrayList<ArrayList<Pair>> table) {
+    public static boolean loadFromFile(String fileName, ArrayList<Row> table) {
         File file = getFilePath(fileName);
         if(!file.exists()) {
             System.out.println("File not found: " + file.getPath());
@@ -137,14 +139,16 @@ public class FileHandler {
             String line;
             table.clear();
 
-            while((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null) {
                 line = line.trim();
                 Matcher matcher = pattern.matcher(line);
-                ArrayList<Pair> row = new ArrayList<>();
-                while(matcher.find()) {
-                    row.add(new Pair(matcher.group(1), matcher.group(2)));
+                ArrayList<Pair> cells = new ArrayList<>();
+
+                while (matcher.find()) {
+                    cells.add(new Pair(matcher.group(1), matcher.group(2)));
                 }
-                table.add(row);
+
+                table.add(new Row(cells)); // CHANGED
             }
 
             System.out.println("\nFile loaded successfully from " + file.getPath() + "\n");
@@ -156,7 +160,7 @@ public class FileHandler {
     }
 
     // Save table to file
-    public static void saveToFile(ArrayList<ArrayList<Pair>> table) {
+    public static void saveToFile(ArrayList<Row> table) {
         if(fileName == null) {
             System.out.println("No file associated with this table.");
             return;
@@ -166,11 +170,8 @@ public class FileHandler {
 
         // Write table data to file
         try (PrintWriter writer = new PrintWriter(file)) { // Close PrintWriter after block ends
-            for(ArrayList<Pair> row : table) {
-                for(Pair p : row) {
-                    writer.print(p.toString() + " ");
-                }
-                writer.println();
+             for (Row row : table) {
+                writer.println(row.toString());
             }
             System.out.println("Table saved to " + file.getPath() + "\n");
         } catch(IOException e) {

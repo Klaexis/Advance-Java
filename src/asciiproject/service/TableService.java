@@ -2,13 +2,13 @@ package asciiproject.service;
 
 import java.util.Scanner;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Random;
 import asciiproject.model.Pair;
+import asciiproject.model.Row;
 import asciiproject.util.FileHandler;
 
 public class TableService {
-	private ArrayList<ArrayList<Pair>> table;
+	private ArrayList<Row> table;
     private String fileName;
 	
     // Initialize the ArrayList
@@ -18,7 +18,7 @@ public class TableService {
     }
 
     // Getter Method for table
-    public ArrayList<ArrayList<Pair>> getTable() {
+    public ArrayList<Row> getTable() {
         return table;
     }
 
@@ -115,14 +115,14 @@ public class TableService {
 
     // Check if the key already exists in the table
     private boolean isKeyUnique(String key) {
-        for (ArrayList<Pair> row : table) {
-            for (Pair pair : row) {
+        for (Row row : table) {
+            for (Pair pair : row.getCells()) {
                 if (pair.getKey().equals(key)) {
-                    return false; // Key already exists
+                    return false;
                 }
             }
         }
-        return true; 
+        return true;
     }
 
     // Search for character/s in both key and value of each cell
@@ -148,10 +148,11 @@ public class TableService {
         boolean foundAny = false;
 
         for(int i = 0; i < table.size(); i++) {
-            ArrayList<Pair> row = table.get(i);
+            Row row = table.get(i);
+            ArrayList<Pair> cells = row.getCells();
 
-            for(int j = 0; j < row.size(); j++) {
-                Pair cell = row.get(j);
+            for(int j = 0; j < cells.size(); j++) {
+                Pair cell = cells.get(j);
                 String key = cell.getKey();
                 String value = cell.getValue();
 
@@ -209,14 +210,14 @@ public class TableService {
             row = parsed[0];
             col = parsed[1];
 
-            if (row >= 0 && col >= 0 && row < table.size() && col < table.get(row).size()) {
+            if (row >= 0 && col >= 0 && row < table.size() && col < table.get(row).getCells().size()) {
                 validIndex = true;
             } else {
                 System.out.println("Invalid format or index out of bounds. Use rowxcol (e.g., 0x0).\n");
             }
         }
 
-        Pair cell = table.get(row).get(col); // Get the cell
+        Pair cell = table.get(row).getCells().get(col);
         String oldKey = cell.getKey();
         String oldValue = cell.getValue();
 
@@ -320,9 +321,10 @@ public class TableService {
         }
 
         // Generate new row
-        ArrayList<Pair> newRow = generateRandomKeyPair(numCells);
+        ArrayList<Pair> newCells = generateRandomKeyPair(numCells);
 
         // Insert new row at specified position
+        Row newRow = new Row(newCells);
         table.add(insertRow, newRow);
 
         System.out.println("\nNew row added successfully!\n");
@@ -372,19 +374,18 @@ public class TableService {
             }
         }
 
-        ArrayList<Pair> selectedRow = table.get(rowIndex);
+        Row selectedRow = table.get(rowIndex);
+        ArrayList<Pair> cells = selectedRow.getCells();
 
-        // Make a final copy for use in comparator
+        // Make a final copy for use in sort
         final String sortOrder = order;
 
         // Sort the selected row
-        Comparator<Pair> comparator = (p1, p2) -> {
+        cells.sort((p1, p2) -> {
             String c1 = p1.getKey() + p1.getValue();
             String c2 = p2.getKey() + p2.getValue();
             return sortOrder.equals("asc") ? c1.compareTo(c2) : c2.compareTo(c1);
-        };
-
-        selectedRow.sort(comparator);
+        });
 
         System.out.println("\nRow " + (rowIndex + 1) + " sorted in " + order.toUpperCase() + " order.\n");
 
@@ -407,7 +408,8 @@ public class TableService {
         table.clear();
 
         for(int i = 0; i < rows; i++) {
-            table.add(generateRandomKeyPair(cols));
+            ArrayList<Pair> cells = generateRandomKeyPair(cols);
+            table.add(new Row(cells));
         }
 
         saveTable();
@@ -422,11 +424,8 @@ public class TableService {
         }
 
         System.out.println("Table Contents:");
-        for(ArrayList<Pair> row : table) {
-            for(Pair p : row) {
-                System.out.print(p.toString() + " ");
-            }
-            System.out.println();
+        for (Row row : table) {
+            System.out.println(row.toString());
         }
         System.out.println();
     }
