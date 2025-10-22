@@ -13,12 +13,12 @@ import asciiproject.model.Pair;
 import asciiproject.service.TableService;
 
 public class FileHandler {
-    private String fileName;
+    private static String fileName;
     private static final String FOLDER_NAME = "text files"; // Folder for all .txt files
 
     // Set the file name 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    public static void setFileName(String name) {
+        fileName = name;
     }
 
     // Check if folder exists, if not create it
@@ -58,9 +58,8 @@ public class FileHandler {
     }
 
     // Check for existing file or create a new one
-    public String checkOrCreateFile(Scanner sc, String[] args) {
+    public static String checkOrCreateFile(Scanner sc, String[] args) {
         String fileName = null;
-        boolean fileLoaded = false;
 
         getFolder(); // Ensure folder exists
 
@@ -87,10 +86,6 @@ public class FileHandler {
 
                 file = getFilePath(fileName);
             }
-
-            if(file.exists()) {
-                fileLoaded = true;
-            }
         }
 
         // If no file found, create a new one
@@ -106,14 +101,12 @@ public class FileHandler {
 
             if(file.exists()) {
                 System.out.println("File already exists. Loading existing file instead.");
-                fileLoaded = true;
             } else {
                 int[] tableDimensions = TableService.getTableDimensions(sc);
                 int row = tableDimensions[0];
                 int col = tableDimensions[1];
 
                 generateTableAndSave(fileName, row, col);
-                fileLoaded = true;
             }
         }
 
@@ -122,7 +115,7 @@ public class FileHandler {
     }
 
     // Load table from file 
-    public boolean loadFromFile(String fileName, ArrayList<ArrayList<Pair>> table) {
+    public static boolean loadFromFile(String fileName, ArrayList<ArrayList<Pair>> table) {
         File file = getFilePath(fileName);
         if(!file.exists()) {
             System.out.println("File not found: " + file.getPath());
@@ -163,7 +156,7 @@ public class FileHandler {
     }
 
     // Save table to file
-    public void saveToFile(ArrayList<ArrayList<Pair>> table) {
+    public static void saveToFile(ArrayList<ArrayList<Pair>> table) {
         if(fileName == null) {
             System.out.println("No file associated with this table.");
             return;

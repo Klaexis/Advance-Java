@@ -8,12 +8,12 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         
         FileHandler fileHandler = new FileHandler();
-        String fileName = fileHandler.checkOrCreateFile(sc, args);
+        String fileName = FileHandler.checkOrCreateFile(sc, args);
 
         TableService tableService = new TableService(fileHandler, fileName);
 
-        fileHandler.setFileName(fileName);
-        fileHandler.loadFromFile(fileName, tableService.getTable());
+        FileHandler.setFileName(fileName);
+        FileHandler.loadFromFile(fileName, tableService.getTable());
         
         tableService.printTable();
 

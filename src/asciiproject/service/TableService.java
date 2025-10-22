@@ -9,13 +9,11 @@ import asciiproject.util.FileHandler;
 
 public class TableService {
 	private ArrayList<ArrayList<Pair>> table;
-    private FileHandler fileHandler;
     private String fileName;
 	
     // Initialize the ArrayList
     public TableService(FileHandler fileHandler, String fileName) {
         this.table = new ArrayList<>();
-        this.fileHandler = fileHandler;
         this.fileName = fileName;
     }
 
@@ -25,8 +23,8 @@ public class TableService {
     }
 
     private void saveTable() {
-        fileHandler.setFileName(fileName);
-        fileHandler.saveToFile(table);
+        FileHandler.setFileName(fileName);
+        FileHandler.saveToFile(table);
     }
 
 	//Generate a random 3 character ASCII String
