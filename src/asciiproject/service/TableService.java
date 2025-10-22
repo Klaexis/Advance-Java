@@ -2,15 +2,17 @@ package asciiproject.service;
 
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import asciiproject.model.Pair;
 import asciiproject.model.Row;
 import asciiproject.util.FileHandler;
 
 public class TableService {
-	private ArrayList<Row> table;
+	private List<Row> table;
     private String fileName;
-	
+	private static final Random RANDOM = new Random();
+
     // Initialize the ArrayList
     public TableService(FileHandler fileHandler, String fileName) {
         this.table = new ArrayList<>();
@@ -18,7 +20,7 @@ public class TableService {
     }
 
     // Getter Method for table
-    public ArrayList<Row> getTable() {
+    public List<Row> getTable() {
         return table;
     }
 
@@ -29,11 +31,10 @@ public class TableService {
 
 	//Generate a random 3 character ASCII String
 	private static String generateRandomAscii() {
-		Random random = new Random();
 		StringBuilder randomASCII = new StringBuilder(3);
 		
 		for(int i = 0; i < 3; i++) {
-			int ascii = random.nextInt(94) + 33;
+			int ascii = RANDOM.nextInt(94) + 33;
 			randomASCII.append((char) ascii);
 		}
 		
@@ -41,8 +42,8 @@ public class TableService {
 	}
 
     // Generate a row with random key-value pairs
-    public static ArrayList<Pair> generateRandomKeyPair(int numCells) {
-        ArrayList<Pair> keyPair = new ArrayList<>();
+    public static List<Pair> generateRandomKeyPair(int numCells) {
+        List<Pair> keyPair = new ArrayList<>();
         for(int i = 0; i < numCells; i++) {
             String key = generateRandomAscii();
             String value = generateRandomAscii();
@@ -149,7 +150,7 @@ public class TableService {
 
         for(int i = 0; i < table.size(); i++) {
             Row row = table.get(i);
-            ArrayList<Pair> cells = row.getCells();
+            List<Pair> cells = row.getCells();
 
             for(int j = 0; j < cells.size(); j++) {
                 Pair cell = cells.get(j);
@@ -321,7 +322,7 @@ public class TableService {
         }
 
         // Generate new row
-        ArrayList<Pair> newCells = generateRandomKeyPair(numCells);
+        List<Pair> newCells = generateRandomKeyPair(numCells);
 
         // Insert new row at specified position
         Row newRow = new Row(newCells);
@@ -375,7 +376,7 @@ public class TableService {
         }
 
         Row selectedRow = table.get(rowIndex);
-        ArrayList<Pair> cells = selectedRow.getCells();
+        List<Pair> cells = selectedRow.getCells();
 
         // Make a final copy for use in sort
         final String sortOrder = order;
@@ -408,7 +409,7 @@ public class TableService {
         table.clear();
 
         for(int i = 0; i < rows; i++) {
-            ArrayList<Pair> cells = generateRandomKeyPair(cols);
+            List<Pair> cells = generateRandomKeyPair(cols);
             table.add(new Row(cells));
         }
 

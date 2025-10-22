@@ -1,28 +1,21 @@
 package asciiproject.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Row {
-    private ArrayList<Pair> cells;
+    private List<Pair> cells;
 
-    public Row() {
-        this.cells = new ArrayList<>();
-    }
-
-    public Row(ArrayList<Pair> cells) {
+    public Row(List<Pair> cells) {
         this.cells = cells;
     }
 
-    public ArrayList<Pair> getCells() {
+    public List<Pair> getCells() {
         return cells;
     }
 
     public void setCells(ArrayList<Pair> cells) {
         this.cells = cells;
-    }
-
-    public void addCell(Pair pair) {
-        cells.add(pair);
     }
 
     @Override

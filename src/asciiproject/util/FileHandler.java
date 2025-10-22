@@ -45,7 +45,7 @@ public class FileHandler {
         // Write table data to file
         try (PrintWriter writer = new PrintWriter(file)) { // Close PrintWriter after block ends
             for(int i = 0; i < rows; i++) {
-                ArrayList<Pair> row = TableService.generateRandomKeyPair(cols);
+                List<Pair> row = TableService.generateRandomKeyPair(cols);
                 for(Pair p : row) {
                     writer.print(p.toString() + " ");
                 }
@@ -117,7 +117,7 @@ public class FileHandler {
     }
 
     // Load table from file 
-    public static boolean loadFromFile(String fileName, ArrayList<Row> table) {
+    public static boolean loadFromFile(String fileName, List<Row> table) {
         File file = getFilePath(fileName);
         if(!file.exists()) {
             System.out.println("File not found: " + file.getPath());
@@ -142,13 +142,13 @@ public class FileHandler {
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
                 Matcher matcher = pattern.matcher(line);
-                ArrayList<Pair> cells = new ArrayList<>();
+                List<Pair> cells = new ArrayList<>();
 
                 while (matcher.find()) {
                     cells.add(new Pair(matcher.group(1), matcher.group(2)));
                 }
 
-                table.add(new Row(cells)); // CHANGED
+                table.add(new Row(cells));
             }
 
             System.out.println("\nFile loaded successfully from " + file.getPath() + "\n");
@@ -160,7 +160,7 @@ public class FileHandler {
     }
 
     // Save table to file
-    public static void saveToFile(ArrayList<Row> table) {
+    public static void saveToFile(List<Row> table) {
         if(fileName == null) {
             System.out.println("No file associated with this table.");
             return;
