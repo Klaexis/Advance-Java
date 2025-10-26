@@ -65,11 +65,9 @@ public class TableService {
                     result[0] = row;
                     result[1] = col;
                 } catch (NumberFormatException e) {
-                    System.out.println("Both row and column must be valid numbers.");
+                    // Parsing failed, return -1, -1
                 }
             }
-        } else {
-            System.out.println("Invalid format. Please use the format rowxcol (ex. 1x1, 3x3) with lowercase 'x'.");
         }
 
         return result; 
@@ -94,7 +92,7 @@ public class TableService {
                 dimensions[1] = col;
                 validInput = true;
             } else {
-                System.out.println("Row and column must be greater than 0.");
+                System.out.println("Invalid format. Please use rowxcol (ex. 1x1, 3x3) and ensure both are numbers greater than 0.\n");
             }
         }
         System.out.println();
