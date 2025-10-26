@@ -33,12 +33,12 @@ public class FileHandler {
         return folder;
     }
 
-    // Get the full file path inside the folder
+    // Get the full file path inside the "text files" directory
     private static File getFilePath(String fileName) {
         return new File(getFolder(), fileName);
     }
     
-    // Generate new table and save to file
+    // Generates a new random ASCII table and writes it directly to a .txt file.
     public static void generateTableAndSave(String fileName, int rows, int cols) {
         File file = getFilePath(fileName);
 
@@ -47,9 +47,9 @@ public class FileHandler {
             for(int i = 0; i < rows; i++) {
                 List<Pair> row = TableService.generateRandomKeyPair(cols);
                 for(Pair p : row) {
-                    writer.print(p.toString() + " ");
+                    writer.print(p.toString() + " "); // Space separate pairs
                 }
-                writer.println();
+                writer.println(); // New line after each row
             }
             System.out.println("New table generated and saved to " + file.getPath());
         } catch(IOException e) {
@@ -59,7 +59,7 @@ public class FileHandler {
         System.out.println();
     }
 
-    // Check for existing file or create a new one
+    // Checks if a text file exists (from command-line args or user input), creates one if not.
     public static String checkOrCreateFile(Scanner sc, String[] args) {
         String fileName = null;
 
@@ -104,10 +104,12 @@ public class FileHandler {
             if(file.exists()) {
                 System.out.println("File already exists. Loading existing file instead.");
             } else {
+                // Ask user for table dimensions 
                 int[] tableDimensions = TableService.getTableDimensions(sc);
                 int row = tableDimensions[0];
                 int col = tableDimensions[1];
 
+                // Generate table and save to file
                 generateTableAndSave(fileName, row, col);
             }
         }
@@ -124,30 +126,34 @@ public class FileHandler {
             return false;
         }
 
-        // Regex pattern to match key-value pairs in the format: (key , value)
-        //  \(             match literal '('
-        //  (.*?)          capture the key — any characters (non-greedy)
-        //  \s,\s          match a comma with one space on each side
-        //  (.*?)          capture the value — any characters (non-greedy)
-        //  \)             match literal ')'
-        //  \s*            match optional whitespace after ')'
-        //  (?=\(|$)       ensure the match is followed by '(' or end of string
+        /*  
+            Regex pattern to match key-value pairs in the format: (key , value)
+            \(             match literal '('
+            (.*?)          capture the key — any characters (non-greedy)
+            \s,\s          match a comma with one space on each side
+            (.*?)          capture the value — any characters (non-greedy)
+            \)             match literal ')'
+            \s*            match optional whitespace after ')'
+            (?=\(|$)       ensure the match is followed by '(' or end of string
+        */
        Pattern pattern = Pattern.compile("\\((.*?)\\s,\\s(.*?)\\)\\s*(?=\\(|$)");
 
         // Wrap FileReader in BufferedReader for faster reading
         try(BufferedReader reader = new BufferedReader(new FileReader(file))) { // Close BufferedReader and FileReader after block ends
             String line;
-            table.clear();
+            table.clear(); // Clear existing table before loading new data
 
             while((line = reader.readLine()) != null) {
                 line = line.trim();
                 Matcher matcher = pattern.matcher(line);
                 List<Pair> cells = new ArrayList<>();
 
+                // Extract all (key , value) pairs from the line
                 while (matcher.find()) {
                     cells.add(new Pair(matcher.group(1), matcher.group(2)));
                 }
 
+                // Each line becomes a Row in the table
                 table.add(new Row(cells));
             }
 

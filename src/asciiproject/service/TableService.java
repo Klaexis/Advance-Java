@@ -13,7 +13,7 @@ public class TableService {
     private String fileName;
 	private static final Random RANDOM = new Random();
 
-    // Initialize the ArrayList
+    // Initializes a new TableService with an empty table and a given file name.
     public TableService(FileHandler fileHandler, String fileName) {
         this.table = new ArrayList<>();
         this.fileName = fileName;
@@ -24,12 +24,13 @@ public class TableService {
         return table;
     }
 
+    // Saves the current table state to a file using FileHandler
     private void saveTable() {
         FileHandler.setFileName(fileName);
         FileHandler.saveToFile(table);
     }
 
-	//Generate a random 3 character ASCII String
+	// Generate a random 3 character ASCII String
 	private static String generateRandomAscii() {
 		StringBuilder randomASCII = new StringBuilder(3);
 		
@@ -65,11 +66,12 @@ public class TableService {
                     result[0] = row;
                     result[1] = col;
                 } catch (NumberFormatException e) {
-                    // Parsing failed, return -1, -1
+                    // Invalid number format — keep default [-1, -1]
                 }
             }
         }
 
+        // Returns an int array [row, col]; returns [-1, -1] if invalid
         return result; 
     }
 
@@ -107,7 +109,7 @@ public class TableService {
 
         while((index = text.indexOf(search, index)) != -1) {
             count++;
-            index++;
+            index++; 
         }
         return count;
     }
@@ -146,6 +148,7 @@ public class TableService {
 
         boolean foundAny = false;
 
+         // Iterate through all rows and cells
         for(int i = 0; i < table.size(); i++) {
             Row row = table.get(i);
             List<Pair> cells = row.getCells();
@@ -155,6 +158,7 @@ public class TableService {
                 String key = cell.getKey();
                 String value = cell.getValue();
 
+                // Count how many times the search term appears in key and value
                 int keyCount = countOccurrences(key, input);
                 int valueCount = countOccurrences(value, input);
 
@@ -197,7 +201,8 @@ public class TableService {
             return;
         }
 
-        int row = 0, col = 0;
+        int row = 0;
+        int col = 0;
         boolean validIndex = false;
 
         // Get valid cell index from user
@@ -209,6 +214,7 @@ public class TableService {
             row = parsed[0];
             col = parsed[1];
 
+            // Validate input range
             if(row >= 0 && col >= 0 && row < table.size() && col < table.get(row).getCells().size()) {
                 validIndex = true;
             } else {
@@ -220,7 +226,7 @@ public class TableService {
         String oldKey = cell.getKey();
         String oldValue = cell.getValue();
 
-        sc.nextLine(); // Clear newline
+        sc.nextLine(); // Clear leftover newline
 
         // Ask what to edit: key, value, or both
         String choice = "";
@@ -242,7 +248,7 @@ public class TableService {
                 System.out.print("Enter new key (leave blank to keep '" + oldKey + "'): ");
                 String inputKey = sc.nextLine().trim();
                 if(!inputKey.isEmpty()) {
-                    if(isKeyUnique(inputKey)) {
+                    if(isKeyUnique(inputKey)) { // Check if key is unique
                         newKey = inputKey; 
                         validKey = true;
                     } else {
@@ -254,6 +260,7 @@ public class TableService {
             }
         }
 
+        // Get new value
         if(choice.equals("value") || choice.equals("both")) {
             System.out.print("Enter new value (leave blank to keep '" + oldValue + "'): ");
             String inputValue = sc.nextLine().trim();
@@ -379,7 +386,7 @@ public class TableService {
         // Make a final copy for use in sort
         final String sortOrder = order;
 
-        // Sort the selected row
+        // Concatenate key and value and compare based on ASCII Unicode order
         cells.sort((p1, p2) -> {
             String c1 = p1.getKey() + p1.getValue();
             String c2 = p2.getKey() + p2.getValue();
@@ -405,7 +412,8 @@ public class TableService {
         int cols = tableDimensions[1];
 
         table.clear();
-
+        
+        // Generate new table row by row
         for(int i = 0; i < rows; i++) {
             List<Pair> cells = generateRandomKeyPair(cols);
             table.add(new Row(cells));
