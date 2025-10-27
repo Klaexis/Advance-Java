@@ -4,6 +4,7 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
 import asciiproject.model.Pair;
 import asciiproject.model.Row;
 import asciiproject.util.FileHandler;

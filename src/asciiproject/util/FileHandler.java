@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import asciiproject.model.Pair;
 import asciiproject.model.Row;
 import asciiproject.service.TableService;

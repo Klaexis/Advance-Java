@@ -1,8 +1,10 @@
 package asciiproject;
 
 import java.util.Scanner;
+
 import asciiproject.util.FileHandler;
 import asciiproject.service.TableService;
+
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
