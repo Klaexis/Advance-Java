@@ -14,7 +14,7 @@ public class FileHandler {
     private static final String FOLDER_NAME = "text files"; // Folder for all .txt files
 
     // Check if folder exists, if not create it
-    private static File getFolder() {
+    public static File getFolder() {
         File folder = new File(FOLDER_NAME);
         if(!folder.exists()) {
             folder.mkdir(); // create folder if it doesn’t exist
