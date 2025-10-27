@@ -1,5 +1,6 @@
 package asciiproject;
 
+import java.io.File;
 import java.util.Scanner;
 
 import asciiproject.util.FileHandler;
@@ -10,11 +11,15 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         
         String fileName = FileHandler.checkOrCreateFile(sc, args);
-        FileHandler.setFileName(fileName);
-
+        File file = FileHandler.getFilePath(fileName);
         TableService tableService = new TableService(fileName);
 
-        FileHandler.loadFromFile(fileName, tableService.getTable());
+        if (file.length() == 0) { // Create new table if file is empty
+            System.out.println("Creating new table...");
+            tableService.createNewTable(sc);
+        } else { // Load existing table from file
+            tableService.loadFromFile();
+        }
         
         tableService.printTable();
 

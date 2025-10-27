@@ -1,6 +1,8 @@
 package asciiproject.service;
 
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -26,12 +28,53 @@ public class TableService {
         return table;
     }
 
-    // Saves the current table state to a file using FileHandler
+    // Saves the current table state to a file
     private void saveTable() {
-        FileHandler.setFileName(fileName);
-        FileHandler.saveToFile(table);
+        List<String> lines = new ArrayList<>();
+        for (Row row : table) {
+            lines.add(row.toString());
+        }
+        FileHandler.saveText(fileName, lines);
     }
 
+    // Load table data from file
+    public boolean loadFromFile() {
+        List<String> lines = FileHandler.readText(fileName);
+        table.clear();
+
+        /*  
+            Regex pattern to match key-value pairs in the format: (key , value)
+            \(             match literal '('
+            (.*?)          capture the key — any characters (non-greedy)
+            \s,\s          match a comma with one space on each side
+            (.*?)          capture the value — any characters (non-greedy)
+            \)             match literal ')'
+            \s*            match optional whitespace after ')'
+            (?=\(|$)       ensure the match is followed by '(' or end of string
+        */
+        Pattern pattern = Pattern.compile("\\((.*?)\\s,\\s(.*?)\\)\\s*(?=\\(|$)");
+
+        for (String line : lines) {
+            Matcher matcher = pattern.matcher(line);
+            List<Pair> cells = new ArrayList<>();
+            while (matcher.find()) {
+                cells.add(new Pair(matcher.group(1), matcher.group(2)));
+            }
+            if (!cells.isEmpty()) {
+                table.add(new Row(cells));
+            }
+        }
+
+        if (table.isEmpty()) {
+            System.out.println("No valid table data found in file.\n");
+            return false;
+        }
+
+        System.out.println("File loaded successfully.\n");
+        return true;
+    }
+
+    // Create a new table with user inputted dimensions
     public void createNewTable(Scanner sc) {
         int[] dims = getTableDimensions(sc);
         int rows = dims[0];
@@ -42,7 +85,7 @@ public class TableService {
             table.add(new Row(generateRandomKeyPair(cols)));
         }
 
-        FileHandler.generateTableAndSave(fileName, table);
+        saveTable();
     }
 
 	// Generate a random 3 character ASCII String
@@ -76,10 +119,8 @@ public class TableService {
             String[] parts = input.split("x");
             if(parts.length == 2) {
                 try {
-                    int row = Integer.parseInt(parts[0]);
-                    int col = Integer.parseInt(parts[1]);
-                    result[0] = row;
-                    result[1] = col;
+                    result[0] = Integer.parseInt(parts[0]);
+                    result[1] = Integer.parseInt(parts[1]);
                 } catch (NumberFormatException e) {
                     // Invalid number format — keep default [-1, -1]
                 }
@@ -91,7 +132,6 @@ public class TableService {
     }
 
     // Get table dimensions from user
-	// Instantiate FileHandler here
     public static int[] getTableDimensions(Scanner sc) {
         int[] dimensions = new int[2];
         boolean validInput = false;
@@ -102,12 +142,9 @@ public class TableService {
 
 			// Check if input matches pattern like 1x1 or 3x3
 			int[] parsed = parseRowColInput(input);
-            int row = parsed[0];
-            int col = parsed[1];
 
-            if(row > 0 && col > 0) {
-                dimensions[0] = row;
-                dimensions[1] = col;
+            if (parsed[0] > 0 && parsed[1] > 0) {
+                dimensions = parsed;
                 validInput = true;
             } else {
                 System.out.println("Invalid format. Please use rowxcol (ex. 1x1, 3x3) and ensure both are numbers greater than 0.\n");
