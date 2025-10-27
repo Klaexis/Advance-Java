@@ -30,7 +30,7 @@ public class TableService {
     }
 
     // Saves the current table state to a file
-    private void saveTable() {
+    public void saveTable() {
         List<String> lines = new ArrayList<>();
         for (Row row : table.getRows()) {
             lines.add(row.toString());
@@ -102,7 +102,7 @@ public class TableService {
 	}
 
     // Generate a row with random key-value pairs
-    public static List<Pair> generateRandomKeyPair(int numCells) {
+    private static List<Pair> generateRandomKeyPair(int numCells) {
         List<Pair> keyPair = new ArrayList<>();
         for(int i = 0; i < numCells; i++) {
             String key = generateRandomAscii();
@@ -133,7 +133,7 @@ public class TableService {
     }
 
     // Get table dimensions from user
-    public static int[] getTableDimensions(Scanner sc) {
+    private static int[] getTableDimensions(Scanner sc) {
         int[] dimensions = new int[2];
         boolean validInput = false;
 
@@ -189,11 +189,6 @@ public class TableService {
 
         System.out.print("Enter character/s you want to search: ");
         String input = sc.nextLine().trim();
-
-        if(input.contains(" ")) {
-            System.out.println("Invalid input. Input should not contain spaces.\n");
-            return;
-        }
 
         if(input.isEmpty()) {
             System.out.println("Invalid input. Please enter at least one character.\n");
