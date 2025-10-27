@@ -9,29 +9,30 @@ import java.util.Random;
 
 import asciiproject.model.Pair;
 import asciiproject.model.Row;
+import asciiproject.model.Table;
 import asciiproject.util.FileHandler;
 
 // TableService to service a table 
 public class TableService {
-	private List<Row> table; // Change this to table object
+	private Table table;
     private String fileName;
 	private static final Random RANDOM = new Random();
 
     // Initializes a new TableService with an empty table and a given file name.
     public TableService(String fileName) {
-        this.table = new ArrayList<>();
+        this.table = new Table();
         this.fileName = fileName;
     }
 
     // Getter Method for table
-    public List<Row> getTable() {
+    public Table getTable() {
         return table;
     }
 
     // Saves the current table state to a file
     private void saveTable() {
         List<String> lines = new ArrayList<>();
-        for (Row row : table) {
+        for (Row row : table.getRows()) {
             lines.add(row.toString());
         }
         FileHandler.saveText(fileName, lines);
@@ -61,7 +62,7 @@ public class TableService {
                 cells.add(new Pair(matcher.group(1), matcher.group(2)));
             }
             if (!cells.isEmpty()) {
-                table.add(new Row(cells));
+                table.addRow(new Row(cells));
             }
         }
 
@@ -82,7 +83,7 @@ public class TableService {
 
         table.clear();
         for (int i = 0; i < rows; i++) {
-            table.add(new Row(generateRandomKeyPair(cols)));
+            table.addRow(new Row(generateRandomKeyPair(cols)));
         }
 
         saveTable();
@@ -169,7 +170,7 @@ public class TableService {
 
     // Check if the key already exists in the table
     private boolean isKeyUnique(String key) {
-        for(Row row : table) {
+        for(Row row : table.getRows()) {
             for(Pair pair : row.getCells()) {
                 if(pair.getKey().equals(key)) {
                     return false;
@@ -203,7 +204,7 @@ public class TableService {
 
          // Iterate through all rows and cells
         for(int i = 0; i < table.size(); i++) {
-            Row row = table.get(i);
+            Row row = table.getRow(i);
             List<Pair> cells = row.getCells();
 
             for(int j = 0; j < cells.size(); j++) {
@@ -268,14 +269,14 @@ public class TableService {
             col = parsed[1];
 
             // Validate input range
-            if(row >= 0 && col >= 0 && row < table.size() && col < table.get(row).getCells().size()) {
+            if(row >= 0 && col >= 0 && row < table.size() && col < table.getRow(row).getCells().size()) {
                 validIndex = true;
             } else {
                 System.out.println("Invalid format or index out of bounds. Use rowxcol (e.g., 0x0).\n");
             }
         }
 
-        Pair cell = table.get(row).getCells().get(col);
+        Pair cell = table.getRow(row).getCells().get(col);
         String oldKey = cell.getKey();
         String oldValue = cell.getValue();
 
@@ -384,7 +385,7 @@ public class TableService {
 
         // Insert new row at specified position
         Row newRow = new Row(newCells);
-        table.add(insertRow, newRow);
+        table.addRowAt(insertRow, newRow);
 
         System.out.println("\nNew row added successfully!\n");
         saveTable();
@@ -433,7 +434,7 @@ public class TableService {
             }
         }
 
-        Row selectedRow = table.get(rowIndex);
+        Row selectedRow = table.getRow(rowIndex);
         List<Pair> cells = selectedRow.getCells();
 
         // Make a final copy for use in sort
@@ -469,7 +470,7 @@ public class TableService {
         // Generate new table row by row
         for(int i = 0; i < rows; i++) {
             List<Pair> cells = generateRandomKeyPair(cols);
-            table.add(new Row(cells));
+            table.addRow(new Row(cells));
         }
 
         saveTable();
@@ -484,7 +485,7 @@ public class TableService {
         }
 
         System.out.println("Table Contents:");
-        for(Row row : table) {
+        for(Row row : table.getRows()) {
             System.out.println(row.toString());
         }
         System.out.println();
