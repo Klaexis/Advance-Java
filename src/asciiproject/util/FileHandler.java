@@ -39,6 +39,7 @@ public class FileHandler {
         }
     }
 
+    // Check for existing file or create new one
     public static String checkOrCreateFile(Scanner sc, String[] args) {
         getFolder();
         String fileName = null;
@@ -122,7 +123,7 @@ public class FileHandler {
         }
     }
 
-     // Read lines from text file
+    // Read lines from text file
     public static List<String> readText(String fileName) {
         File file = getFilePath(fileName);
         List<String> lines = new ArrayList<>();

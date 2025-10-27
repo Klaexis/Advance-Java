@@ -29,66 +29,6 @@ public class TableService {
         return table;
     }
 
-    // Saves the current table state to a file
-    public void saveTable() {
-        List<String> lines = new ArrayList<>();
-        for (Row row : table.getRows()) {
-            lines.add(row.toString());
-        }
-        FileHandler.saveText(fileName, lines);
-    }
-
-    // Load table data from file
-    public boolean loadFromFile() {
-        List<String> lines = FileHandler.readText(fileName);
-        table.clear();
-
-        /*  
-            Regex pattern to match key-value pairs in the format: (key , value)
-            \(             match literal '('
-            (.*?)          capture the key — any characters (non-greedy)
-            \s,\s          match a comma with one space on each side
-            (.*?)          capture the value — any characters (non-greedy)
-            \)             match literal ')'
-            \s*            match optional whitespace after ')'
-            (?=\(|$)       ensure the match is followed by '(' or end of string
-        */
-        Pattern pattern = Pattern.compile("\\((.*?)\\s,\\s(.*?)\\)\\s*(?=\\(|$)");
-
-        for (String line : lines) {
-            Matcher matcher = pattern.matcher(line);
-            List<Pair> cells = new ArrayList<>();
-            while (matcher.find()) {
-                cells.add(new Pair(matcher.group(1), matcher.group(2)));
-            }
-            if (!cells.isEmpty()) {
-                table.addRow(new Row(cells));
-            }
-        }
-
-        if (table.isEmpty()) {
-            System.out.println("No valid table data found in file.\n");
-            return false;
-        }
-
-        System.out.println("File loaded successfully.\n");
-        return true;
-    }
-
-    // Create a new table with user inputted dimensions
-    public void createNewTable(Scanner sc) {
-        int[] dims = getTableDimensions(sc);
-        int rows = dims[0];
-        int cols = dims[1];
-
-        table.clear();
-        for (int i = 0; i < rows; i++) {
-            table.addRow(new Row(generateRandomKeyPair(cols)));
-        }
-
-        saveTable();
-    }
-
 	// Generate a random 3 character ASCII String
 	private static String generateRandomAscii() {
 		StringBuilder randomASCII = new StringBuilder(3);
@@ -166,6 +106,67 @@ public class TableService {
             index++; 
         }
         return count;
+    }
+
+    // Saves the current table state to a file
+    public void saveTable() {
+        List<String> lines = new ArrayList<>();
+        for (Row row : table.getRows()) {
+            lines.add(row.toString());
+        }
+        FileHandler.saveText(fileName, lines);
+    }
+
+    // Load table data from file
+    public boolean loadFromFile() {
+        List<String> lines = FileHandler.readText(fileName);
+        table.clear();
+
+        /*  
+            Regex pattern to match key-value pairs in the format: (key , value)
+            \(             match literal '('
+            (.*?)          capture the key — any characters (non-greedy)
+            \s,\s          match a comma with one space on each side
+            (.*?)          capture the value — any characters (non-greedy)
+            \)             match literal ')'
+            \s*            match optional whitespace after ')'
+            (?=\(|$)       ensure the match is followed by '(' or end of string
+        */
+        Pattern pattern = Pattern.compile("\\((.*?)\\s,\\s(.*?)\\)\\s*(?=\\(|$)");
+
+        for (String line : lines) {
+            Matcher matcher = pattern.matcher(line); // Create matcher for the line
+            List<Pair> cells = new ArrayList<>();
+            while (matcher.find()) { // Find all key-value pairs in the line
+                cells.add(new Pair(matcher.group(1), matcher.group(2))); // Add Pair to cells list
+            }
+            if (!cells.isEmpty()) {
+                table.addRow(new Row(cells)); // Add new Row to table if cells were found
+            }
+        }
+
+        if (table.isEmpty()) {
+            System.out.println("No valid table data found in file.\n");
+            return false;
+        }
+
+        System.out.println("File loaded successfully.\n");
+        saveTable();
+        return true;
+    }
+
+    // Create a new table with user inputted dimensions
+    public void createNewTable(Scanner sc) {
+        int[] dims = getTableDimensions(sc);
+        int rows = dims[0];
+        int cols = dims[1];
+
+        table.clear();
+        for (int i = 0; i < rows; i++) {
+            table.addRow(new Row(generateRandomKeyPair(cols)));
+        }
+
+        saveTable();
     }
 
     // Check if the key already exists in the table
