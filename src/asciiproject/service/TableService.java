@@ -1,34 +1,32 @@
 package asciiproject.service;
 
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import asciiproject.model.Pair;
 import asciiproject.model.Row;
+import asciiproject.model.Table;
 import asciiproject.util.FileHandler;
 
+// TableService to service a table 
 public class TableService {
-	private List<Row> table;
+	private Table table;
     private String fileName;
 	private static final Random RANDOM = new Random();
 
     // Initializes a new TableService with an empty table and a given file name.
-    public TableService(FileHandler fileHandler, String fileName) {
-        this.table = new ArrayList<>();
+    public TableService(String fileName) {
+        this.table = new Table();
         this.fileName = fileName;
     }
 
     // Getter Method for table
-    public List<Row> getTable() {
+    public Table getTable() {
         return table;
-    }
-
-    // Saves the current table state to a file using FileHandler
-    private void saveTable() {
-        FileHandler.setFileName(fileName);
-        FileHandler.saveToFile(table);
     }
 
 	// Generate a random 3 character ASCII String
@@ -44,7 +42,7 @@ public class TableService {
 	}
 
     // Generate a row with random key-value pairs
-    public static List<Pair> generateRandomKeyPair(int numCells) {
+    private static List<Pair> generateRandomKeyPair(int numCells) {
         List<Pair> keyPair = new ArrayList<>();
         for(int i = 0; i < numCells; i++) {
             String key = generateRandomAscii();
@@ -62,10 +60,8 @@ public class TableService {
             String[] parts = input.split("x");
             if(parts.length == 2) {
                 try {
-                    int row = Integer.parseInt(parts[0]);
-                    int col = Integer.parseInt(parts[1]);
-                    result[0] = row;
-                    result[1] = col;
+                    result[0] = Integer.parseInt(parts[0]);
+                    result[1] = Integer.parseInt(parts[1]);
                 } catch (NumberFormatException e) {
                     // Invalid number format — keep default [-1, -1]
                 }
@@ -77,7 +73,7 @@ public class TableService {
     }
 
     // Get table dimensions from user
-    public static int[] getTableDimensions(Scanner sc) {
+    private static int[] getTableDimensions(Scanner sc) {
         int[] dimensions = new int[2];
         boolean validInput = false;
 
@@ -87,12 +83,9 @@ public class TableService {
 
 			// Check if input matches pattern like 1x1 or 3x3
 			int[] parsed = parseRowColInput(input);
-            int row = parsed[0];
-            int col = parsed[1];
 
-            if(row > 0 && col > 0) {
-                dimensions[0] = row;
-                dimensions[1] = col;
+            if (parsed[0] > 0 && parsed[1] > 0) {
+                dimensions = parsed;
                 validInput = true;
             } else {
                 System.out.println("Invalid format. Please use rowxcol (ex. 1x1, 3x3) and ensure both are numbers greater than 0.\n");
@@ -115,9 +108,70 @@ public class TableService {
         return count;
     }
 
+    // Saves the current table state to a file
+    public void saveTable() {
+        List<String> lines = new ArrayList<>();
+        for (Row row : table.getRows()) {
+            lines.add(row.toString());
+        }
+        FileHandler.saveText(fileName, lines);
+    }
+
+    // Load table data from file
+    public boolean loadFromFile() {
+        List<String> lines = FileHandler.readText(fileName);
+        table.clear();
+
+        /*  
+            Regex pattern to match key-value pairs in the format: (key , value)
+            \(             match literal '('
+            (.*?)          capture the key — any characters (non-greedy)
+            \s,\s          match a comma with one space on each side
+            (.*?)          capture the value — any characters (non-greedy)
+            \)             match literal ')'
+            \s*            match optional whitespace after ')'
+            (?=\(|$)       ensure the match is followed by '(' or end of string
+        */
+        Pattern pattern = Pattern.compile("\\((.*?)\\s,\\s(.*?)\\)\\s*(?=\\(|$)");
+
+        for (String line : lines) {
+            Matcher matcher = pattern.matcher(line); // Create matcher for the line
+            List<Pair> cells = new ArrayList<>();
+            while (matcher.find()) { // Find all key-value pairs in the line
+                cells.add(new Pair(matcher.group(1), matcher.group(2))); // Add Pair to cells list
+            }
+            if (!cells.isEmpty()) {
+                table.addRow(new Row(cells)); // Add new Row to table if cells were found
+            }
+        }
+
+        if (table.isEmpty()) {
+            System.out.println("No valid table data found in file.\n");
+            return false;
+        }
+
+        System.out.println("File loaded successfully.\n");
+        saveTable();
+        return true;
+    }
+
+    // Create a new table with user inputted dimensions
+    public void createNewTable(Scanner sc) {
+        int[] dims = getTableDimensions(sc);
+        int rows = dims[0];
+        int cols = dims[1];
+
+        table.clear();
+        for (int i = 0; i < rows; i++) {
+            table.addRow(new Row(generateRandomKeyPair(cols)));
+        }
+
+        saveTable();
+    }
+
     // Check if the key already exists in the table
     private boolean isKeyUnique(String key) {
-        for(Row row : table) {
+        for(Row row : table.getRows()) {
             for(Pair pair : row.getCells()) {
                 if(pair.getKey().equals(key)) {
                     return false;
@@ -137,11 +191,6 @@ public class TableService {
         System.out.print("Enter character/s you want to search: ");
         String input = sc.nextLine().trim();
 
-        if(input.contains(" ")) {
-            System.out.println("Invalid input. Input should not contain spaces.\n");
-            return;
-        }
-
         if(input.isEmpty()) {
             System.out.println("Invalid input. Please enter at least one character.\n");
             return;
@@ -151,7 +200,7 @@ public class TableService {
 
          // Iterate through all rows and cells
         for(int i = 0; i < table.size(); i++) {
-            Row row = table.get(i);
+            Row row = table.getRow(i);
             List<Pair> cells = row.getCells();
 
             for(int j = 0; j < cells.size(); j++) {
@@ -216,14 +265,14 @@ public class TableService {
             col = parsed[1];
 
             // Validate input range
-            if(row >= 0 && col >= 0 && row < table.size() && col < table.get(row).getCells().size()) {
+            if(row >= 0 && col >= 0 && row < table.size() && col < table.getRow(row).getCells().size()) {
                 validIndex = true;
             } else {
                 System.out.println("Invalid format or index out of bounds. Use rowxcol (e.g., 0x0).\n");
             }
         }
 
-        Pair cell = table.get(row).getCells().get(col);
+        Pair cell = table.getRow(row).getCells().get(col);
         String oldKey = cell.getKey();
         String oldValue = cell.getValue();
 
@@ -332,7 +381,7 @@ public class TableService {
 
         // Insert new row at specified position
         Row newRow = new Row(newCells);
-        table.add(insertRow, newRow);
+        table.addRowAt(insertRow, newRow);
 
         System.out.println("\nNew row added successfully!\n");
         saveTable();
@@ -381,7 +430,7 @@ public class TableService {
             }
         }
 
-        Row selectedRow = table.get(rowIndex);
+        Row selectedRow = table.getRow(rowIndex);
         List<Pair> cells = selectedRow.getCells();
 
         // Make a final copy for use in sort
@@ -417,7 +466,7 @@ public class TableService {
         // Generate new table row by row
         for(int i = 0; i < rows; i++) {
             List<Pair> cells = generateRandomKeyPair(cols);
-            table.add(new Row(cells));
+            table.addRow(new Row(cells));
         }
 
         saveTable();
@@ -432,7 +481,7 @@ public class TableService {
         }
 
         System.out.println("Table Contents:");
-        for(Row row : table) {
+        for(Row row : table.getRows()) {
             System.out.println(row.toString());
         }
         System.out.println();
