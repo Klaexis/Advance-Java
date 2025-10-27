@@ -9,13 +9,14 @@ import asciiproject.model.Pair;
 import asciiproject.model.Row;
 import asciiproject.util.FileHandler;
 
+// TableService to service a table 
 public class TableService {
-	private List<Row> table;
+	private List<Row> table; // Change this to table object
     private String fileName;
 	private static final Random RANDOM = new Random();
 
     // Initializes a new TableService with an empty table and a given file name.
-    public TableService(FileHandler fileHandler, String fileName) {
+    public TableService(String fileName) {
         this.table = new ArrayList<>();
         this.fileName = fileName;
     }
@@ -29,6 +30,19 @@ public class TableService {
     private void saveTable() {
         FileHandler.setFileName(fileName);
         FileHandler.saveToFile(table);
+    }
+
+    public void createNewTable(Scanner sc) {
+        int[] dims = getTableDimensions(sc);
+        int rows = dims[0];
+        int cols = dims[1];
+
+        table.clear();
+        for (int i = 0; i < rows; i++) {
+            table.add(new Row(generateRandomKeyPair(cols)));
+        }
+
+        FileHandler.generateTableAndSave(fileName, table);
     }
 
 	// Generate a random 3 character ASCII String
@@ -77,6 +91,7 @@ public class TableService {
     }
 
     // Get table dimensions from user
+	// Instantiate FileHandler here
     public static int[] getTableDimensions(Scanner sc) {
         int[] dimensions = new int[2];
         boolean validInput = false;

@@ -13,8 +13,8 @@ import java.util.regex.Pattern;
 
 import asciiproject.model.Pair;
 import asciiproject.model.Row;
-import asciiproject.service.TableService;
 
+// Can be used by all, independent
 public class FileHandler {
     private static String fileName;
     private static final String FOLDER_NAME = "text files"; // Folder for all .txt files
@@ -40,24 +40,17 @@ public class FileHandler {
     }
     
     // Generates a new random ASCII table and writes it directly to a .txt file.
-    public static void generateTableAndSave(String fileName, int rows, int cols) {
+    public static void generateTableAndSave(String fileName, List<Row> table) {
         File file = getFilePath(fileName);
 
-        // Write table data to file
-        try (PrintWriter writer = new PrintWriter(file)) { // Close PrintWriter after block ends
-            for(int i = 0; i < rows; i++) {
-                List<Pair> row = TableService.generateRandomKeyPair(cols);
-                for(Pair p : row) {
-                    writer.print(p.toString() + " "); // Space separate pairs
-                }
-                writer.println(); // New line after each row
+        try (PrintWriter writer = new PrintWriter(file)) {
+            for (Row row : table) {
+                writer.println(row.toString());
             }
-            System.out.println("New table generated and saved to " + file.getPath());
-        } catch(IOException e) {
+            System.out.println("New table saved to " + file.getPath());
+        } catch (IOException e) {
             System.out.println("Error writing to file: " + e.getMessage());
         }
-
-        System.out.println();
     }
 
     // Checks if a text file exists (from command-line args or user input), creates one if not.
@@ -105,13 +98,7 @@ public class FileHandler {
             if(file.exists()) {
                 System.out.println("File already exists. Loading existing file instead.");
             } else {
-                // Ask user for table dimensions 
-                int[] tableDimensions = TableService.getTableDimensions(sc);
-                int row = tableDimensions[0];
-                int col = tableDimensions[1];
-
-                // Generate table and save to file
-                generateTableAndSave(fileName, row, col);
+                System.out.println("File does not exist yet. Creating new file: " + file.getPath());
             }
         }
 

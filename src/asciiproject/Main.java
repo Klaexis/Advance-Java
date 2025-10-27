@@ -9,12 +9,11 @@ public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         
-        FileHandler fileHandler = new FileHandler();
         String fileName = FileHandler.checkOrCreateFile(sc, args);
-
-        TableService tableService = new TableService(fileHandler, fileName);
-
         FileHandler.setFileName(fileName);
+
+        TableService tableService = new TableService(fileName);
+
         FileHandler.loadFromFile(fileName, tableService.getTable());
         
         tableService.printTable();
