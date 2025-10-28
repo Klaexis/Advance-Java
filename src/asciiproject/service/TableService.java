@@ -189,13 +189,12 @@ public class TableService {
         }
 
         System.out.print("Enter character/s you want to search: ");
-        String input = sc.nextLine().trim();
+        String input = sc.nextLine();
 
         if(input.isEmpty()) {
             System.out.println("Invalid input. Please enter at least one character.\n");
             return;
         }
-
         boolean foundAny = false;
 
          // Iterate through all rows and cells
@@ -296,7 +295,7 @@ public class TableService {
             boolean validKey = false;
             while(!validKey) {
                 System.out.print("Enter new key (leave blank to keep '" + oldKey + "'): ");
-                String inputKey = sc.nextLine().trim();
+                String inputKey = sc.nextLine();
                 if(!inputKey.isEmpty()) {
                     if(isKeyUnique(inputKey)) { // Check if key is unique
                         newKey = inputKey; 
@@ -313,7 +312,7 @@ public class TableService {
         // Get new value
         if(choice.equals("value") || choice.equals("both")) {
             System.out.print("Enter new value (leave blank to keep '" + oldValue + "'): ");
-            String inputValue = sc.nextLine().trim();
+            String inputValue = sc.nextLine();
             if(!inputValue.isEmpty()) {
                 newValue = inputValue; 
             }
