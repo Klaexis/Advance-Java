@@ -28,6 +28,14 @@ public class FileHandler {
         return new File(getFolder(), fileName);
     }
 
+    // Helper method to ensure .txt extension
+    public static String ensureTxtExtension(String fileName) {
+        if (!fileName.toLowerCase().endsWith(".txt")) {
+            return fileName + ".txt";
+        }
+        return fileName;
+    }
+
     // Create file if not existing
     public static void createFile(File file) {
         try {
@@ -47,10 +55,7 @@ public class FileHandler {
 
         // If filename is given via command-line argument
         if (args.length > 0 && !args[0].trim().isEmpty()) {
-            fileName = args[0].trim();
-            if (!fileName.endsWith(".txt")) {
-                fileName += ".txt";
-            }
+            fileName = ensureTxtExtension(args[0].trim());
 
             file = getFilePath(fileName);
 
@@ -58,30 +63,28 @@ public class FileHandler {
             if (!file.exists()) {
                 System.out.println("File '" + fileName + "' not found.");
 
-                while (true) {
+                boolean validInput = false;
+                while (!validInput) {
                     System.out.print("Enter a valid filename (or leave blank to create a new file): ");
                     String input = sc.nextLine().trim();
 
                     if (input.isEmpty()) {
                         // If blank create new file 
                         System.out.print("Enter new filename: ");
-                        fileName = sc.nextLine().trim();
-                        if (!fileName.endsWith(".txt")) {
-                            fileName += ".txt";
-                        }
+
+                        fileName = ensureTxtExtension(sc.nextLine().trim());
                         file = getFilePath(fileName);
+
                         createFile(file);
-                        break;
+                        validInput = true;
                     } else {
                         // Check if the entered file exists
-                        if (!input.endsWith(".txt")) {
-                            input += ".txt";
-                        }
+                        input = ensureTxtExtension(input);
                         file = getFilePath(input);
                         if (file.exists()) {
                             fileName = input;
                             System.out.println("Found existing file: " + file.getPath());
-                            break;
+                            validInput = true;
                         } else {
                             System.out.println("File not found. Try again.");
                         }
@@ -93,10 +96,7 @@ public class FileHandler {
         } else {
             // No CLI argument then ask for new filename
             System.out.print("Enter new filename: ");
-            fileName = sc.nextLine().trim();
-            if (!fileName.endsWith(".txt")) {
-                fileName += ".txt";
-            }
+            fileName = ensureTxtExtension(sc.nextLine().trim());
 
             file = getFilePath(fileName);
             if (!file.exists()) {
