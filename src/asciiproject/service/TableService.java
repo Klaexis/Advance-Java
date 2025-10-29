@@ -42,7 +42,7 @@ public class TableService {
 	}
 
     // Generate a row with random key-value pairs
-    private static List<Pair> generateRandomKeyPair(int numCells) {
+    private List<Pair> generateRandomKeyPair(int numCells) {
         List<Pair> keyPair = new ArrayList<>();
         for(int i = 0; i < numCells; i++) {
             String key = generateRandomAscii();
@@ -53,7 +53,7 @@ public class TableService {
     }
 
     // Helper method to parse user input in the format rowxcol
-    private static int[] parseRowColInput(String input) {
+    private int[] parseRowColInput(String input) {
         int[] result = {-1, -1};
 
         if(input.contains("x")) {
@@ -73,7 +73,7 @@ public class TableService {
     }
 
     // Get table dimensions from user
-    private static int[] getTableDimensions(Scanner sc) {
+    private int[] getTableDimensions(Scanner sc) {
         int[] dimensions = new int[2];
         boolean validInput = false;
 
@@ -97,7 +97,7 @@ public class TableService {
     }
 
     // Helper method to count substring occurrences
-    private static int countOccurrences(String text, String search) {
+    private int countOccurrences(String text, String search) {
         int count = 0;
         int index = 0;
 
@@ -106,6 +106,20 @@ public class TableService {
             index++; 
         }
         return count;
+    }
+
+    // Create a new table with user inputted dimensions
+    public void createNewTable(Scanner sc) {
+        int[] dims = getTableDimensions(sc);
+        int rows = dims[0];
+        int cols = dims[1];
+
+        table.clear();
+        for (int i = 0; i < rows; i++) {
+            table.addRow(new Row(generateRandomKeyPair(cols)));
+        }
+
+        saveTable();
     }
 
     // Saves the current table state to a file
@@ -155,19 +169,6 @@ public class TableService {
         return true;
     }
 
-    // Create a new table with user inputted dimensions
-    public void createNewTable(Scanner sc) {
-        int[] dims = getTableDimensions(sc);
-        int rows = dims[0];
-        int cols = dims[1];
-
-        table.clear();
-        for (int i = 0; i < rows; i++) {
-            table.addRow(new Row(generateRandomKeyPair(cols)));
-        }
-
-        saveTable();
-    }
 
     // Check if the key already exists in the table
     private boolean isKeyUnique(String key) {
