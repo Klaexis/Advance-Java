@@ -4,16 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Row {
+    // List of Pair objects as cells in the row
     private List<Pair> cells;
 
+    // Constructor: initializes an empty row
     public Row(List<Pair> cells) {
         this.cells = cells;
     }
 
+    // Get all cells
     public List<Pair> getCells() {
         return cells;
     }
 
+    // Set all cells
     public void setCells(ArrayList<Pair> cells) {
         this.cells = cells;
     }

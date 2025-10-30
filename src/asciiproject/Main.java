@@ -10,15 +10,15 @@ public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         
-        String fileName = FileHandler.checkOrCreateFile(sc, args);
-        File file = FileHandler.getFilePath(fileName);
-        TableService tableService = new TableService(fileName);
+        String fileName = FileHandler.checkOrCreateFile(sc, args); // Get or create file
+        File file = FileHandler.getFilePath(fileName); // Get full file path
+        TableService tableService = new TableService(fileName); // Initialize TableService with filename
 
         if (file.length() == 0) { // Create new table if file is empty
             System.out.println("Creating new table...");
             tableService.createNewTable(sc);
         } else { // Load existing table from file
-            tableService.loadFromFile();
+            tableService.loadTableFromFile(); 
         }
         
         tableService.printTable();

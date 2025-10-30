@@ -30,9 +30,10 @@ public class TableService {
     }
 
 	// Generate a random 3 character ASCII String
-	private static String generateRandomAscii() {
+	private String generateRandomAscii() {
 		StringBuilder randomASCII = new StringBuilder(3);
 		
+        // Generate 3 random ASCII characters
 		for(int i = 0; i < 3; i++) {
 			int ascii = RANDOM.nextInt(94) + 33;
 			randomASCII.append((char) ascii);
@@ -44,6 +45,8 @@ public class TableService {
     // Generate a row with random key-value pairs
     private List<Pair> generateRandomKeyPair(int numCells) {
         List<Pair> keyPair = new ArrayList<>();
+        
+        // Generate key-value pairs
         for(int i = 0; i < numCells; i++) {
             String key = generateRandomAscii();
             String value = generateRandomAscii();
@@ -77,6 +80,7 @@ public class TableService {
         int[] dimensions = new int[2];
         boolean validInput = false;
 
+        // Loop until valid input is received
         while(!validInput) {
             System.out.print("Enter the dimension of the table. Please use the format rowxcol (ex. 3x3): ");
             String input = sc.nextLine().trim();
@@ -84,6 +88,7 @@ public class TableService {
 			// Check if input matches pattern like 1x1 or 3x3
 			int[] parsed = parseRowColInput(input);
 
+            // Validate parsed dimensions
             if (parsed[0] > 0 && parsed[1] > 0) {
                 dimensions = parsed;
                 validInput = true;
@@ -101,6 +106,7 @@ public class TableService {
         int count = 0;
         int index = 0;
 
+        // Loop to find all occurrences
         while((index = text.indexOf(search, index)) != -1) {
             count++;
             index++; 
@@ -115,6 +121,7 @@ public class TableService {
         int cols = dims[1];
 
         table.clear();
+        // Generate new table row by row
         for (int i = 0; i < rows; i++) {
             table.addRow(new Row(generateRandomKeyPair(cols)));
         }
@@ -132,7 +139,7 @@ public class TableService {
     }
 
     // Load table data from file
-    public boolean loadFromFile() {
+    public boolean loadTableFromFile() {
         List<String> lines = FileHandler.readText(fileName);
         table.clear();
 
@@ -148,6 +155,7 @@ public class TableService {
         */
         Pattern pattern = Pattern.compile("\\((.*?)\\s,\\s(.*?)\\)\\s*(?=\\(|$)");
 
+        // Parse each line to extract key-value pairs
         for (String line : lines) {
             Matcher matcher = pattern.matcher(line); // Create matcher for the line
             List<Pair> cells = new ArrayList<>();
@@ -159,6 +167,7 @@ public class TableService {
             }
         }
 
+        // If table is empty after loading, indicate failure
         if (table.isEmpty()) {
             System.out.println("No valid table data found in file.\n");
             return false;
@@ -172,10 +181,11 @@ public class TableService {
 
     // Check if the key already exists in the table
     private boolean isKeyUnique(String key) {
+        // Iterate through all rows and cells to check for key existence
         for(Row row : table.getRows()) {
             for(Pair pair : row.getCells()) {
                 if(pair.getKey().equals(key)) {
-                    return false;
+                    return false; // Key already exists
                 }
             }
         }
@@ -184,25 +194,29 @@ public class TableService {
 
     // Search for character/s in both key and value of each cell
     public void search(Scanner sc) {
+        // Check if table is empty
         if(table.isEmpty()) {
             System.out.println("Table is empty. Please load or generate a table first.\n");
             return;
         }
 
+        // Prompt user for search input
         System.out.print("Enter character/s you want to search: ");
         String input = sc.nextLine();
 
+        // Validate input
         if(input.isEmpty()) {
             System.out.println("Invalid input. Please enter at least one character.\n");
             return;
         }
         boolean foundAny = false;
 
-         // Iterate through all rows and cells
+        // Iterate through all rows and cells
         for(int i = 0; i < table.size(); i++) {
             Row row = table.getRow(i);
             List<Pair> cells = row.getCells();
 
+            // Iterate through all cells in the row
             for(int j = 0; j < cells.size(); j++) {
                 Pair cell = cells.get(j);
                 String key = cell.getKey();
@@ -216,6 +230,7 @@ public class TableService {
                 if(keyCount > 0 || valueCount > 0) {
                     foundAny = true;
 
+                    // Print occurrences found
                     if(keyCount > 0 && valueCount > 0) {
                         System.out.println(
                             keyCount + " <" + input + "> occurrence/s at key and " 
@@ -237,6 +252,7 @@ public class TableService {
             }
         }
 
+        // If no occurrences found
         if(!foundAny) {
             System.out.println("No occurrences found for \"" + input + "\". \n"); // No occurrences found for "<input>"
         } else {
@@ -246,6 +262,7 @@ public class TableService {
 
     // Edit the key/value/both of a cell
     public void edit(Scanner sc) {
+        // Check if table is empty
         if(table.isEmpty()) {
             System.out.println("Table is empty. Please load or generate a table first.\n");
             return;
@@ -260,6 +277,7 @@ public class TableService {
             System.out.print("Enter cell index to edit (rowxcol, ex. 0x0): ");
             String input = sc.next();
 
+            // Parse input
             int[] parsed = parseRowColInput(input);
             row = parsed[0];
             col = parsed[1];
@@ -272,6 +290,7 @@ public class TableService {
             }
         }
 
+        // Get the cell to edit
         Pair cell = table.getRow(row).getCells().get(col);
         String oldKey = cell.getKey();
         String oldValue = cell.getValue();
@@ -288,6 +307,7 @@ public class TableService {
             }
         }
 
+        // New key and value variables
         String newKey = oldKey;
         String newValue = oldValue;
 
@@ -297,9 +317,11 @@ public class TableService {
             while(!validKey) {
                 System.out.print("Enter new key (leave blank to keep '" + oldKey + "'): ");
                 String inputKey = sc.nextLine();
+
+                // Validate uniqueness if key is edited
                 if(!inputKey.isEmpty()) {
                     if(isKeyUnique(inputKey)) { // Check if key is unique
-                        newKey = inputKey; 
+                        newKey = inputKey; // Update new key
                         validKey = true;
                     } else {
                         System.out.println("Key already exists. Please enter a unique key.");
@@ -333,6 +355,7 @@ public class TableService {
 
     // Add a new row to the table with random key-value pairs
     public void addRow(Scanner sc) {
+        // Check if table is empty
         if(table.isEmpty()) {
             System.out.println("Table is empty. Please load or generate a table first.\n");
             return;
@@ -365,6 +388,8 @@ public class TableService {
             System.out.print("Insert the new row after which row? (0 to " + table.size() + ", 0 = before first row): ");
             try {
                 insertRow = sc.nextInt();
+
+                // Validate row range
                 if(insertRow >= 0 && insertRow <= table.size()) {
                     validRow = true;
                 } else {
@@ -391,6 +416,7 @@ public class TableService {
 
     // Sort by unicode value a specific row based on user input
     public void sortRow(Scanner sc) {
+        // Check if table is empty
         if(table.isEmpty()) {
             System.out.println("No data to sort. Please load or generate a table first.\n");
             return;
@@ -405,8 +431,9 @@ public class TableService {
             System.out.print("Enter the row number to sort (1-" + table.size() + "): ");
             String input = sc.nextLine().trim();
 
+            // Validate row number input
             try {
-                rowIndex = Integer.parseInt(input) - 1; // user inputs 1-based index
+                rowIndex = Integer.parseInt(input) - 1; 
                 if(rowIndex >= 0 && rowIndex < table.size()) {
                     validRow = true;
                 } else {
@@ -423,6 +450,7 @@ public class TableService {
             System.out.print("Sort order <asc/desc>: ");
             order = sc.nextLine().trim().toLowerCase();
 
+            // Validate order input
             if(order.equals("asc") || order.equals("desc")) {
                 validOrder = true;
             } else {
@@ -430,6 +458,7 @@ public class TableService {
             }
         }
 
+        // Get the row to sort
         Row selectedRow = table.getRow(rowIndex);
         List<Pair> cells = selectedRow.getCells();
 
@@ -440,7 +469,7 @@ public class TableService {
         cells.sort((p1, p2) -> {
             String c1 = p1.getKey() + p1.getValue();
             String c2 = p2.getKey() + p2.getValue();
-            return sortOrder.equals("asc") ? c1.compareTo(c2) : c2.compareTo(c1);
+            return sortOrder.equals("asc") ? c1.compareTo(c2) : c2.compareTo(c1); 
         });
 
         System.out.println("\nRow " + (rowIndex + 1) + " sorted in " + order.toUpperCase() + " order.\n");
@@ -452,11 +481,13 @@ public class TableService {
 
     // Reset table with new dimensions and new key-value pairs
     public void resetTable(Scanner sc) {
+        // Check if fileName is set
         if(fileName == null) {
             System.out.println("No file associated with this table.");
             return;
         }
 
+        // Get new table dimensions from user
         int[] tableDimensions = getTableDimensions(sc);
         int rows = tableDimensions[0];
         int cols = tableDimensions[1];
@@ -475,12 +506,15 @@ public class TableService {
 	
 	// Print the table 
     public void printTable() {
+        // Check if table is empty
         if(table.isEmpty()) {
             System.out.println("Table is empty or not loaded.\n");
             return;
         }
 
         System.out.println("Table Contents:");
+        
+        // Print each row of the table
         for(Row row : table.getRows()) {
             System.out.println(row.toString());
         }

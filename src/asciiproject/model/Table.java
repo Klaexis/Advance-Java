@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Table {
+    // List of Row objects in the table
     private List<Row> rows;
 
     // Constructor: initializes an empty table
