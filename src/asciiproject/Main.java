@@ -6,6 +6,7 @@ import java.util.Scanner;
 import asciiproject.util.FileHandler;
 import asciiproject.service.TableService;
 
+//This is main
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
