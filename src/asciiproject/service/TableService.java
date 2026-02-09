@@ -67,6 +67,7 @@ public class TableService {
                     result[1] = Integer.parseInt(parts[1]);
                 } catch (NumberFormatException e) {
                     // Invalid number format — keep default [-1, -1]
+					e.printStackTrace();
                 }
             }
         }
